@@ -1,11 +1,10 @@
 package app
 
 import (
-	"log"
-
 	"github.com/nkoporec/dump/config"
+	"github.com/nkoporec/dump/internal/app/cmd"
 )
 
 func Run(cfg *config.Config) {
-	log.Fatal("Run")
+	cmd.Execute();
 }
