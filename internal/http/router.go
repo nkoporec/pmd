@@ -13,6 +13,6 @@ func NewRouter(handler *gin.Engine) {
 }
 
 func newApiRoutes(handler *gin.RouterGroup) {
-	handler.GET("/dump", dump)
+	handler.POST("/dump", dump)
 }
 

@@ -20,7 +20,7 @@ func init() {
 
 func listen() {
 	// Start http.
-	handler := gin.Default()
+	handler := gin.New()
 	http.NewRouter(handler)
 	handler.Run()
 }

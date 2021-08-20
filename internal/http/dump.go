@@ -1,10 +1,18 @@
 package http
 
 import (
+	"io/ioutil"
+
 	"github.com/gin-gonic/gin"
-	"github.com/nkoporec/dump/internal/rpc"
+	tson "github.com/skanehira/tson/lib"
 )
 
 func dump(c *gin.Context) {
-	rpc.SocketHandler(c.Writer, c.Request)
+	request,err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	go tson.Edit(request)
+	return
 }
