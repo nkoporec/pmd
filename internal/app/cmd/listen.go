@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"log"
-
+	"github.com/gin-gonic/gin"
+	"github.com/nkoporec/dump/internal/http"
 	"github.com/spf13/cobra"
 )
 
@@ -19,5 +19,8 @@ func init() {
 }
 
 func listen() {
-	log.Fatal("listen cmd")
+	// Start http.
+	handler := gin.Default()
+	http.NewRouter(handler)
+	handler.Run()
 }
