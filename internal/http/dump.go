@@ -1,13 +1,10 @@
 package http
 
-import "github.com/gin-gonic/gin"
-
-func newDumpRoutes(handler *gin.RouterGroup) {
-	handler.POST("/dump", dump)
-}
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/nkoporec/dump/internal/rpc"
+)
 
 func dump(c *gin.Context) {
-	c.JSON(200, gin.H {
-		"message" : "dump",
-	})
+	rpc.SocketHandler(c.Writer, c.Request)
 }
