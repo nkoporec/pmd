@@ -6,6 +6,7 @@ require (
 	github.com/BurntSushi/toml v0.4.1 // indirect
 	github.com/gin-gonic/gin v1.7.4
 	github.com/ilyakaznacheev/cleanenv v1.2.5
+	github.com/jroimartin/gocui v0.5.0
 	github.com/skanehira/tson v0.0.0-20191202135716-4f590aae4ec8
 	github.com/spf13/cobra v1.2.1
 	olympos.io/encoding/edn v0.0.0-20201019073823-d3554ca0b0a3 // indirect
