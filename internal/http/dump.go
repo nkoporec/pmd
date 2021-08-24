@@ -3,16 +3,17 @@ package http
 import (
 	"io/ioutil"
 
+	"github.com/dgraph-io/ristretto"
 	"github.com/gin-gonic/gin"
-	tson "github.com/skanehira/tson/lib"
 )
 
 func dump(c *gin.Context) {
+	cache := c.MustGet("cache").(*ristretto.Cache)
+
 	request,err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		panic(err)
 	}
 
-	go tson.Edit(request)
-	return
+	cache.Set("ddata", string(request), 1)
 }
