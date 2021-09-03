@@ -2,6 +2,7 @@ package ui
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -19,6 +20,10 @@ type DisplayData struct {
 		} `json:"data"`
 }
 
+const (
+	timeFormat = "2006-01-02 20:00:00"
+)
+
 func Display() {
 	if err := termui.Init(); err != nil {
 		log.Fatalf("failed to initialize termtermui: %v", err)
@@ -32,7 +37,7 @@ func Display() {
 	for {
 		select {
 		case e := <-uiEvents:
-			switch e.ID { // event string/identifier
+			switch e.ID {
 			case "q", "<C-c>": // press 'q' or 'C-c' to quit
 				return
 			}
@@ -55,15 +60,26 @@ func getUpdates() {
 		panic(err)
 	}
 
-	// Don't show anything, if we don't have any data.
-	// if len(displayData.Data.Payload) <= 0 {
-	// 	return
-	// }
-
 	//  Table.
 	table := widgets.NewTable()
 	table.Rows = [][]string{
 		{"Type", "File", "Timestamp", "Payload"},
+	}
+
+	lastPayload := "";
+	for _, elem := range displayData.Data {
+		timestamp := time.Unix(int64(elem.Timestamp), 0)
+
+		row := []string{
+			elem.Type,
+			elem.File,
+			fmt.Sprint(timestamp),
+			elem.Payload,
+		}
+		table.Rows = append(table.Rows, row)
+
+		// Set payload.
+		lastPayload = elem.Payload
 	}
 
 	table.TextStyle = termui.NewStyle(termui.ColorWhite)
@@ -73,7 +89,7 @@ func getUpdates() {
 	// Payload
 	paragraph := widgets.NewParagraph()
 	paragraph.Title = "Last payload"
-	paragraph.Text = "payload"
+	paragraph.Text = lastPayload
 	paragraph.SetRect(0, 50, 239, 20)
 	termui.Render(paragraph)
 }

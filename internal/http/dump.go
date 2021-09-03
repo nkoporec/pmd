@@ -40,9 +40,9 @@ func dump(c *gin.Context) {
 
 	// Get old data.
 	var dumpData []*RequestData
-	olddata, found := cache.Get("ddata")
+	oldData, found := cache.Get("ddata")
 	if found  {
-		panic(olddata)
+		dumpData = oldData.([]*RequestData)
 	}
 
 	dumpData = append(dumpData, data)
