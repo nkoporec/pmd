@@ -1,7 +1,7 @@
 package ui
 
 import (
-	"io/ioutil"
+	"encoding/json"
 	"log"
 	"net/http"
 	"time"
@@ -10,17 +10,22 @@ import (
 	"github.com/gizak/termui/v3/widgets"
 )
 
+type DisplayData struct {
+		Data []struct {
+			Payload     string  `json:"payload"`
+			File  string  `json:"file"`
+			Type string  `json:"type"`
+			Timestamp  int `json:"timestamp"`
+		} `json:"data"`
+}
+
 func Display() {
 	if err := termui.Init(); err != nil {
 		log.Fatalf("failed to initialize termtermui: %v", err)
 	}
 	defer termui.Close()
 
-	p := widgets.NewParagraph()
-	p.Text = "Hello World!"
-	p.SetRect(0, 0, 25, 5)
-
-	termui.Render(p)
+	termui.Render()
 
 	uiEvents := termui.PollEvents()
 	ticker := time.NewTicker(time.Second).C
@@ -33,24 +38,42 @@ func Display() {
 			}
 		// use Go's built-in tickers for updating and drawing data
 		case <-ticker:
-			drawFunction()
+			getUpdates()
 		}
 	}
 }
 
-func drawFunction() {
-	resp, err := http.Get("http://127.0.0.1:8080/api/get")
+func getUpdates() {
+	request, err := http.Get("http://127.0.0.1:8080/api/get")
 	if err != nil {
-		log.Fatalln(err)
+		panic(err)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	var displayData *DisplayData
+ 	err = json.NewDecoder(request.Body).Decode(&displayData)
 	if err != nil {
-		log.Fatalln(err)
+		panic(err)
 	}
 
-	p := widgets.NewParagraph()
-	p.Text = string(body)
-	p.SetRect(0, 0, 100, 5)
-	termui.Render(p)
+	// Don't show anything, if we don't have any data.
+	// if len(displayData.Data.Payload) <= 0 {
+	// 	return
+	// }
+
+	//  Table.
+	table := widgets.NewTable()
+	table.Rows = [][]string{
+		{"Type", "File", "Timestamp", "Payload"},
+	}
+
+	table.TextStyle = termui.NewStyle(termui.ColorWhite)
+	table.SetRect(0, 0, 239, 20)
+	termui.Render(table)
+
+	// Payload
+	paragraph := widgets.NewParagraph()
+	paragraph.Title = "Last payload"
+	paragraph.Text = "payload"
+	paragraph.SetRect(0, 50, 239, 20)
+	termui.Render(paragraph)
 }

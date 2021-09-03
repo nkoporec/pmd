@@ -12,7 +12,9 @@ func get(c *gin.Context) {
 
 	data, found := cache.Get("ddata")
 	if !found {
-		c.JSON(http.StatusOK, gin.H{"data": ""})
+		c.AbortWithStatusJSON(400, gin.H {
+			"error": "No updates",
+		})
 		return
 	}
 
