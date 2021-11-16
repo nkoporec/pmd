@@ -11,7 +11,7 @@ type RequestData struct {
     Payload     string  `json:"payload"`
     File  string  `json:"file"`
     Type string  `json:"type"`
-    Timestamp  int `json:"timestamp"`
+    Timestamp  string `json:"timestamp"`
 }
 
 func dump(c *gin.Context) {

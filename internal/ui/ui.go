@@ -2,35 +2,56 @@ package ui
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	termui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
+	"github.com/nkoporec/dump/config"
+	"golang.org/x/crypto/ssh/terminal"
 )
+
+const (
+	timeFormat = "2006-01-02 20:00:00"
+)
+
+var cfg *config.Config
 
 type DisplayData struct {
 		Data []struct {
 			Payload     string  `json:"payload"`
 			File  string  `json:"file"`
 			Type string  `json:"type"`
-			Timestamp  int `json:"timestamp"`
+			Timestamp  string `json:"timestamp"`
 		} `json:"data"`
 }
 
-const (
-	timeFormat = "2006-01-02 20:00:00"
-)
+type Term struct {
+	Width int
+	Height  int
+}
 
 func Display() {
+	// Init config.
+	cfg = config.InitConfig()
+
 	if err := termui.Init(); err != nil {
 		log.Fatalf("failed to initialize termtermui: %v", err)
 	}
 	defer termui.Close()
 
 	termui.Render()
+
+	termWidth, termHeight, err := terminal.GetSize(0)
+	if err != nil {
+		log.Fatalf("failed to get terminal size: %v", err)
+	}
+
+	term := &Term{
+		Width: termWidth,
+		Height: termHeight,
+	}
 
 	uiEvents := termui.PollEvents()
 	ticker := time.NewTicker(time.Second).C
@@ -40,26 +61,36 @@ func Display() {
 			switch e.ID {
 			case "q", "<C-c>": // press 'q' or 'C-c' to quit
 				return
+			case "<Resize>":
+				payload := e.Payload.(termui.Resize)
+				term.Width = payload.Width
+				term.Height = payload.Height
+				getUpdates(term)
 			}
-		// use Go's built-in tickers for updating and drawing data
 		case <-ticker:
-			getUpdates()
+			getUpdates(term)
 		}
 	}
 }
 
-func getUpdates() {
-	request, err := http.Get("http://127.0.0.1:8080/api/get")
+func getUpdates(term *Term) {
+	var displayData *DisplayData
+
+	request, err := http.Get("http://" + cfg.Server.Host + ":" + cfg.Server.Port + "/api/get")
 	if err != nil {
 		panic(err)
 	}
 
-	var displayData *DisplayData
  	err = json.NewDecoder(request.Body).Decode(&displayData)
 	if err != nil {
 		panic(err)
 	}
 
+	draw(displayData, term.Width, term.Height)
+}
+
+
+func draw(data *DisplayData, width int, height int) {
 	//  Table.
 	table := widgets.NewTable()
 	table.Rows = [][]string{
@@ -67,13 +98,11 @@ func getUpdates() {
 	}
 
 	lastPayload := "";
-	for _, elem := range displayData.Data {
-		timestamp := time.Unix(int64(elem.Timestamp), 0)
-
+	for _, elem := range data.Data {
 		row := []string{
 			elem.Type,
 			elem.File,
-			fmt.Sprint(timestamp),
+			elem.Timestamp,
 			elem.Payload,
 		}
 		table.Rows = append(table.Rows, row)
@@ -83,13 +112,13 @@ func getUpdates() {
 	}
 
 	table.TextStyle = termui.NewStyle(termui.ColorWhite)
-	table.SetRect(0, 0, 239, 20)
+	table.SetRect(0, 0, width, (height/4))
 	termui.Render(table)
 
 	// Payload
 	paragraph := widgets.NewParagraph()
 	paragraph.Title = "Last payload"
 	paragraph.Text = lastPayload
-	paragraph.SetRect(0, 50, 239, 20)
+	paragraph.SetRect(0, (height/4), width, height)
 	termui.Render(paragraph)
 }

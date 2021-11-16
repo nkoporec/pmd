@@ -1,15 +1,29 @@
 package config
 
+import "github.com/ilyakaznacheev/cleanenv"
+
 type Config struct {
 	App  `yaml:"app"`
-	Log  `yaml:"logger"`
+	Server  `yaml:"server"`
 }
 
 type App struct {
-	Name    string `env-required:"true" yaml:"name"    env:"APP_NAME"`
-	Version string `env-required:"true" yaml:"version" env:"APP_VERSION"`
+	Name    string `yaml:"name"`
+	Version string `yaml:"version"`
 }
 
-// @TODO: Find a logger.
-type Log struct {
+type Server struct {
+	Host    string `yaml:"host" env-default: "127.0.0.1"`
+	Port string `yaml:"port" env-default: "8080"`
+}
+
+func InitConfig() *Config {
+	config := Config{}
+	err := cleanenv.ReadConfig("config/config.yml", &config)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return &config
 }
