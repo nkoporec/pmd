@@ -80,17 +80,17 @@ func Display() {
 				payload := e.Payload.(termui.Resize)
 				term.Width = payload.Width
 				term.Height = payload.Height
-				l,p := getUpdates(term)
+				l,p = getUpdates(l,p)
 				termui.Render(l,p)
 			}
 		case <-ticker:
-			l,p := getUpdates(term)
+			l,p = getUpdates(l,p)
 			termui.Render(l,p)
 		}
 	}
 }
 
-func getUpdates(term *Term) (l *widgets.List,  p *widgets.Paragraph) {
+func getUpdates(list *widgets.List,  paragraph *widgets.Paragraph) (l *widgets.List,  p *widgets.Paragraph) {
 	var displayData *DisplayData
 
 	request, err := http.Get("http://" + cfg.Server.Host + ":" + cfg.Server.Port + "/api/get")
@@ -104,20 +104,21 @@ func getUpdates(term *Term) (l *widgets.List,  p *widgets.Paragraph) {
 		panic(err)
 	}
 
+	// Clear list and paragraph
+	list.Rows = []string{}
+	paragraph.Text = ""
 
 	payload := "";
-	list, paragraph := elements(term.Width, term.Height)
 	for _, elem := range displayData.Data {
     	i, err := strconv.ParseInt(elem.Timestamp, 10, 64)
 		if err != nil {
 			panic(err)
 		}
 
-		row := fmt.Sprintf("[%s] [%s](fg:white,bg:red)", time.Unix(i, 0).Format(time.RFC822), elem.File);
+		row := fmt.Sprintf("[%s] [%s](fg:white,bg:red)", time.Unix(i, 0).Format(timeFormat), elem.File);
 
 		// Add to list.
 		list.Rows = append(list.Rows, row)
-
 
 		// Set payload.
 		payload = elem.Payload
