@@ -2,8 +2,10 @@ package ui
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	termui "github.com/gizak/termui/v3"
@@ -41,8 +43,6 @@ func Display() {
 	}
 	defer termui.Close()
 
-	termui.Render()
-
 	termWidth, termHeight, err := terminal.GetSize(0)
 	if err != nil {
 		log.Fatalf("failed to get terminal size: %v", err)
@@ -53,72 +53,95 @@ func Display() {
 		Height: termHeight,
 	}
 
+	l, p := elements(term.Width, term.Height)
+	termui.Render(l,p)
+
 	uiEvents := termui.PollEvents()
 	ticker := time.NewTicker(time.Second).C
 	for {
 		select {
 		case e := <-uiEvents:
 			switch e.ID {
-			case "q", "<C-c>": // press 'q' or 'C-c' to quit
+			case "q", "<C-c>":
 				return
+			case "j", "<Down>":
+				l.ScrollDown()
+			case "k", "<Up>":
+				l.ScrollUp()
+			case "<C-d>":
+				l.ScrollHalfPageDown()
+			case "<C-u>":
+				l.ScrollHalfPageUp()
+			case "<C-f>":
+				l.ScrollPageDown()
+			case "<C-b>":
+				l.ScrollPageUp()
 			case "<Resize>":
 				payload := e.Payload.(termui.Resize)
 				term.Width = payload.Width
 				term.Height = payload.Height
-				getUpdates(term)
+				l,p := getUpdates(term)
+				termui.Render(l,p)
 			}
 		case <-ticker:
-			getUpdates(term)
+			l,p := getUpdates(term)
+			termui.Render(l,p)
 		}
 	}
 }
 
-func getUpdates(term *Term) {
+func getUpdates(term *Term) (l *widgets.List,  p *widgets.Paragraph) {
 	var displayData *DisplayData
 
 	request, err := http.Get("http://" + cfg.Server.Host + ":" + cfg.Server.Port + "/api/get")
 	if err != nil {
 		panic(err)
 	}
+	defer request.Body.Close()
 
  	err = json.NewDecoder(request.Body).Decode(&displayData)
 	if err != nil {
 		panic(err)
 	}
 
-	draw(displayData, term.Width, term.Height)
-}
 
-
-func draw(data *DisplayData, width int, height int) {
-	//  Table.
-	table := widgets.NewTable()
-	table.Rows = [][]string{
-		{"Type", "File", "Timestamp", "Payload"},
-	}
-
-	lastPayload := "";
-	for _, elem := range data.Data {
-		row := []string{
-			elem.Type,
-			elem.File,
-			elem.Timestamp,
-			elem.Payload,
+	payload := "";
+	list, paragraph := elements(term.Width, term.Height)
+	for _, elem := range displayData.Data {
+    	i, err := strconv.ParseInt(elem.Timestamp, 10, 64)
+		if err != nil {
+			panic(err)
 		}
-		table.Rows = append(table.Rows, row)
+
+		row := fmt.Sprintf("[%s] [%s](fg:white,bg:red)", time.Unix(i, 0).Format(time.RFC822), elem.File);
+
+		// Add to list.
+		list.Rows = append(list.Rows, row)
+
 
 		// Set payload.
-		lastPayload = elem.Payload
+		payload = elem.Payload
 	}
 
-	table.TextStyle = termui.NewStyle(termui.ColorWhite)
-	table.SetRect(0, 0, width, (height/4))
-	termui.Render(table)
+	paragraph.Text = payload
+	
+	return list, paragraph
+}
+
+func elements(width int, height int) (*widgets.List,  *widgets.Paragraph) {
+	l := widgets.NewList()
+	l.Title = "Breakpoints"
+	l.Rows = []string{}
+
+	l.TextStyle = termui.NewStyle(termui.ColorYellow)
+	l.WrapText = false
+	l.SetRect(0, 0, width, (height/4))
 
 	// Payload
 	paragraph := widgets.NewParagraph()
-	paragraph.Title = "Last payload"
-	paragraph.Text = lastPayload
+	paragraph.Title = "Payload"
+	paragraph.Text = ""
 	paragraph.SetRect(0, (height/4), width, height)
-	termui.Render(paragraph)
+
+	return l, paragraph
 }
