@@ -56,6 +56,9 @@ func Display() {
 	l, p := elements(term.Width, term.Height)
 	termui.Render(l,p)
 
+	breakpoint_pos := 0
+	num_breakpoints := 0
+
 	uiEvents := termui.PollEvents()
 	ticker := time.NewTicker(time.Second).C
 	for {
@@ -65,32 +68,38 @@ func Display() {
 			case "q", "<C-c>":
 				return
 			case "j", "<Down>":
-				l.ScrollDown()
+				if breakpoint_pos >= num_breakpoints-1 {
+					l.ScrollDown()
+				} else {
+					l.ScrollDown()
+					breakpoint_pos++
+					l,p, num_breakpoints = getUpdates(l,p, breakpoint_pos)
+					termui.Render(l,p)
+				}
 			case "k", "<Up>":
-				l.ScrollUp()
-			case "<C-d>":
-				l.ScrollHalfPageDown()
-			case "<C-u>":
-				l.ScrollHalfPageUp()
-			case "<C-f>":
-				l.ScrollPageDown()
-			case "<C-b>":
-				l.ScrollPageUp()
+				if breakpoint_pos <= 0 {
+					l.ScrollUp()
+				} else {
+					l.ScrollUp()
+					breakpoint_pos--
+					l,p, num_breakpoints = getUpdates(l,p, breakpoint_pos)
+					termui.Render(l,p)
+				}
 			case "<Resize>":
 				payload := e.Payload.(termui.Resize)
 				term.Width = payload.Width
 				term.Height = payload.Height
-				l,p = getUpdates(l,p)
+				l,p, num_breakpoints = getUpdates(l,p, breakpoint_pos)
 				termui.Render(l,p)
 			}
 		case <-ticker:
-			l,p = getUpdates(l,p)
+			l,p, num_breakpoints = getUpdates(l,p, breakpoint_pos)
 			termui.Render(l,p)
 		}
 	}
 }
 
-func getUpdates(list *widgets.List,  paragraph *widgets.Paragraph) (l *widgets.List,  p *widgets.Paragraph) {
+func getUpdates(list *widgets.List,  paragraph *widgets.Paragraph, breakpoint_pos int) (l *widgets.List,  p *widgets.Paragraph, num_breakpoints int) {
 	var displayData *DisplayData
 
 	request, err := http.Get("http://" + cfg.Server.Host + ":" + cfg.Server.Port + "/api/get")
@@ -108,7 +117,6 @@ func getUpdates(list *widgets.List,  paragraph *widgets.Paragraph) (l *widgets.L
 	list.Rows = []string{}
 	paragraph.Text = ""
 
-	payload := "";
 	for _, elem := range displayData.Data {
     	i, err := strconv.ParseInt(elem.Timestamp, 10, 64)
 		if err != nil {
@@ -119,14 +127,15 @@ func getUpdates(list *widgets.List,  paragraph *widgets.Paragraph) (l *widgets.L
 
 		// Add to list.
 		list.Rows = append(list.Rows, row)
-
-		// Set payload.
-		payload = elem.Payload
 	}
 
-	paragraph.Text = payload
-	
-	return list, paragraph
+	if len(displayData.Data) <= 0 {
+		paragraph.Text = ""
+		return list, paragraph, len(displayData.Data)
+	}
+
+	paragraph.Text = displayData.Data[breakpoint_pos].Payload
+	return list, paragraph, len(displayData.Data)
 }
 
 func elements(width int, height int) (*widgets.List,  *widgets.Paragraph) {
