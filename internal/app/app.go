@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/nkoporec/dump/config"
-	"github.com/nkoporec/dump/internal/app/cmd"
+	"github.com/nkoporec/pmd/config"
+	"github.com/nkoporec/pmd/internal/app/cmd"
 )
 
 func Run(cfg *config.Config) {

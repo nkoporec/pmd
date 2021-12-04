@@ -5,8 +5,8 @@ import (
 
 	"github.com/ilyakaznacheev/cleanenv"
 
-	"github.com/nkoporec/dump/config"
-	"github.com/nkoporec/dump/internal/app"
+	"github.com/nkoporec/pmd/config"
+	"github.com/nkoporec/pmd/internal/app"
 )
 
 func main() {

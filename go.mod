@@ -1,4 +1,4 @@
-module github.com/nkoporec/dump
+module github.com/nkoporec/pmd
 
 go 1.16
 

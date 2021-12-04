@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/nkoporec/dump/internal/http"
-	"github.com/nkoporec/dump/internal/ui"
+	"github.com/nkoporec/pmd/internal/http"
+	"github.com/nkoporec/pmd/internal/ui"
 	"github.com/spf13/cobra"
 )
 

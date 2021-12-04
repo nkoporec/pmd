@@ -7,8 +7,8 @@ import (
 )
 
 var RootCmd = &cobra.Command{
-		Use:   "dump",
-		Short: "Dump debugging made easy.",
+		Use:   "pmd",
+		Short: "Poor's man debugger.",
 		// @todo: Add description.
 		// Long: `Cobra is a CLI library for Go that empowers applications.
 // This application is a tool to generate the needed files

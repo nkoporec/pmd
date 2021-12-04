@@ -10,7 +10,7 @@ import (
 
 	termui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
-	"github.com/nkoporec/dump/config"
+	"github.com/nkoporec/pmd/config"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
