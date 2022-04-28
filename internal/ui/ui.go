@@ -161,7 +161,7 @@ func clearScreen(list *widgets.List, paragraph *widgets.Paragraph, breakpoint_po
 	// Clear list and paragraph
 	list.Rows = []string{}
 	paragraph.Text = ""
-	breakpoint_pos = 0
+	breakpoint_pos = 1
 	return list, paragraph, 0
 }
 
