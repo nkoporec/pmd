@@ -23,6 +23,7 @@ type DisplayData struct {
 	Data []struct {
 		Payload   string `json:"payload"`
 		File      string `json:"file"`
+		Line      string `json:"line"`
 		Type      string `json:"type"`
 		Timestamp string `json:"timestamp"`
 	} `json:"data"`
@@ -126,7 +127,7 @@ func getUpdates(list *widgets.List, paragraph *widgets.Paragraph, breakpoint_pos
 			panic(err)
 		}
 
-		row := fmt.Sprintf("[%s] [%s](fg:white,bg:red)", time.Unix(i, 0).Format(timeFormat), elem.File)
+		row := fmt.Sprintf("[%s] [%s] [%s](fg:white,bg:red)", time.Unix(i, 0).Format(timeFormat), elem.Line, elem.File)
 
 		// Add to list.
 		list.Rows = append(list.Rows, row)

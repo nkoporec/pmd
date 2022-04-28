@@ -10,6 +10,7 @@ import (
 type RequestData struct {
 	Payload   string `json:"payload"`
 	File      string `json:"file"`
+	Line      string `json:"line"`
 	Type      string `json:"type"`
 	Timestamp string `json:"timestamp"`
 }
@@ -22,6 +23,7 @@ func dump(c *gin.Context) {
 	// Request needs to have:
 	// payload - The data that the client dumped.
 	// file - File path.
+	// line - Line number.
 	// type - Debug type (PHP, JS, GO...)
 	// timestamp
 	err := json.NewDecoder(c.Request.Body).Decode(&data)
