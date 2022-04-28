@@ -71,6 +71,9 @@ func Display() {
 			switch e.ID {
 			case "q", "<C-c>":
 				return
+			case "<C-r>":
+				l, p, num_breakpoints = clearScreen(l, p, breakpoint_pos, cfg)
+				termui.Render(l, p)
 			case "j", "<Down>":
 				if breakpoint_pos >= num_breakpoints-1 {
 					l.ScrollDown()
@@ -146,6 +149,19 @@ func getUpdates(list *widgets.List, paragraph *widgets.Paragraph, breakpoint_pos
 
 	paragraph.Text = displayData.Data[breakpoint_pos].Payload
 	return list, paragraph, len(displayData.Data)
+}
+
+func clearScreen(list *widgets.List, paragraph *widgets.Paragraph, breakpoint_pos int, cfg config.Config) (l *widgets.List, p *widgets.Paragraph, num_breakpoints int) {
+	request, err := http.Get("http://" + cfg.Yaml.Host + ":" + cfg.Yaml.Port + "/api/clear")
+	if err != nil {
+		panic(err)
+	}
+	defer request.Body.Close()
+
+	// Clear list and paragraph
+	list.Rows = []string{}
+	paragraph.Text = ""
+	return list, paragraph, 0
 }
 
 func elements(width int, height int) (*widgets.List, *widgets.Paragraph) {

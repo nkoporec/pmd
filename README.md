@@ -46,7 +46,11 @@ pmd("Hello world!");
 3. Run the code and check the terminal
 
 
-You can move up/down between breakpoinst with `J` and `K`
+### Commands
+
+- Move up -> `K`
+- Move down -> `J`
+- Clear screen -> `Ctrl + r`
 
 ## Changelog
 
