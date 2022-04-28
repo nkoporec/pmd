@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"log"
+	"os"
 
 	"github.com/ilyakaznacheev/cleanenv"
 
@@ -12,8 +14,16 @@ import (
 func main() {
 	// Configuration
 	var cfg config.Config
+	var cfgYaml config.ConfigYaml
 
-	err := cleanenv.ReadConfig("./config/config.yml", &cfg)
+	if _, err := os.Stat(cfg.ConfigPath()); errors.Is(err, os.ErrNotExist) {
+		_, err := cfg.CreateConfig()
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	err := cleanenv.ReadConfig(cfg.ConfigPath(), &cfgYaml)
 	if err != nil {
 		log.Fatalf("Config error: %s", err)
 	}

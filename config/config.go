@@ -1,29 +1,72 @@
 package config
 
-import "github.com/ilyakaznacheev/cleanenv"
+import (
+	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
+
+	"github.com/ilyakaznacheev/cleanenv"
+	"gopkg.in/yaml.v2"
+)
 
 type Config struct {
-	App  `yaml:"app"`
-	Server  `yaml:"server"`
+	Yaml ConfigYaml
 }
 
-type App struct {
-	Name    string `yaml:"name"`
-	Version string `yaml:"version"`
-}
-
-type Server struct {
-	Host    string `yaml:"host" env-default: "127.0.0.1"`
+type ConfigYaml struct {
+	Host string `yaml:"host" env-default: "127.0.0.1"`
 	Port string `yaml:"port" env-default: "8080"`
 }
 
-func InitConfig() *Config {
-	config := Config{}
-	err := cleanenv.ReadConfig("config/config.yml", &config)
+func (cfg *Config) InitConfig() *ConfigYaml {
+	config := &ConfigYaml{}
+	err := cleanenv.ReadConfig(cfg.ConfigPath(), &config)
 
 	if err != nil {
 		panic(err)
 	}
 
-	return &config
+	return config
+}
+
+func (cfg *Config) ConfigPath() string {
+	config_dir := cfg.ConfigDir()
+
+	path := config_dir + "/" + "config.yml"
+	return path
+}
+
+func (cfg *Config) ConfigDir() string {
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	path := homedir + "/" + ".config/" + "pmd"
+	return path
+}
+
+func (cfg *Config) CreateConfig() (bool, error) {
+	cfgPath := cfg.ConfigPath()
+
+	config := ConfigYaml{
+		Host: "127.0.0.1",
+		Port: "8080",
+	}
+
+	// Create the config.
+	yamlData, err := yaml.Marshal(&config)
+	if err != nil {
+		fmt.Printf("Error while Marshaling. %v", err)
+		return false, err
+	}
+
+	os.MkdirAll(cfg.ConfigDir(), os.ModePerm)
+	err = ioutil.WriteFile(cfgPath, yamlData, 0644)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }

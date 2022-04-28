@@ -10,6 +10,7 @@ import (
 
 	termui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
+	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/nkoporec/pmd/config"
 	"golang.org/x/crypto/ssh/terminal"
 )
@@ -18,7 +19,7 @@ const (
 	timeFormat = "2006-01-02 20:00:00"
 )
 
-var cfg *config.Config
+var cfg config.Config
 
 type DisplayData struct {
 	Data []struct {
@@ -36,7 +37,10 @@ type Term struct {
 
 func Display() {
 	// Init config.
-	cfg = config.InitConfig()
+	err := cleanenv.ReadConfig(cfg.ConfigPath(), &cfg)
+	if err != nil {
+		log.Fatalf("Config error: %s", err)
+	}
 
 	if err := termui.Init(); err != nil {
 		log.Fatalf("failed to initialize termtermui: %v", err)
@@ -102,7 +106,7 @@ func Display() {
 func getUpdates(list *widgets.List, paragraph *widgets.Paragraph, breakpoint_pos int) (l *widgets.List, p *widgets.Paragraph, num_breakpoints int) {
 	var displayData *DisplayData
 
-	request, err := http.Get("http://" + cfg.Server.Host + ":" + cfg.Server.Port + "/api/get")
+	request, err := http.Get("http://" + cfg.Yaml.Host + ":" + cfg.Yaml.Port + "/api/get")
 	if err != nil {
 		panic(err)
 	}
