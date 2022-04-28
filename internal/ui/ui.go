@@ -127,7 +127,13 @@ func getUpdates(list *widgets.List, paragraph *widgets.Paragraph, breakpoint_pos
 			panic(err)
 		}
 
-		row := fmt.Sprintf("[%s] [%s] [%s](fg:white,bg:red)", time.Unix(i, 0).Format(timeFormat), elem.Line, elem.File)
+		row := fmt.Sprintf(
+			"[%s] [%s] %s:[%s](fg:white,bg:red)",
+			elem.Type,
+			time.Unix(i, 0),
+			elem.Line,
+			elem.File,
+		)
 
 		// Add to list.
 		list.Rows = append(list.Rows, row)
