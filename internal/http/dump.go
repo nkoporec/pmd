@@ -8,10 +8,10 @@ import (
 )
 
 type RequestData struct {
-    Payload     string  `json:"payload"`
-    File  string  `json:"file"`
-    Type string  `json:"type"`
-    Timestamp  string `json:"timestamp"`
+	Payload   string `json:"payload"`
+	File      string `json:"file"`
+	Type      string `json:"type"`
+	Timestamp string `json:"timestamp"`
 }
 
 func dump(c *gin.Context) {
@@ -24,7 +24,7 @@ func dump(c *gin.Context) {
 	// file - File path.
 	// type - Debug type (PHP, JS, GO...)
 	// timestamp
- 	err := json.NewDecoder(c.Request.Body).Decode(&data)
+	err := json.NewDecoder(c.Request.Body).Decode(&data)
 	if err != nil {
 		panic(err)
 	}
@@ -32,7 +32,7 @@ func dump(c *gin.Context) {
 	// Validate that the correct data is send.
 	requestIsValid := validateRequest(data)
 	if !requestIsValid {
-		c.AbortWithStatusJSON(400, gin.H {
+		c.AbortWithStatusJSON(400, gin.H{
 			"error": "Wrong request data.",
 		})
 		return
@@ -41,7 +41,7 @@ func dump(c *gin.Context) {
 	// Get old data.
 	var dumpData []*RequestData
 	oldData, found := cache.Get("ddata")
-	if found  {
+	if found {
 		dumpData = oldData.([]*RequestData)
 	}
 
