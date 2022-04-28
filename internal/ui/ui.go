@@ -19,8 +19,6 @@ const (
 	timeFormat = "2006-01-02 20:00:00"
 )
 
-var cfg config.Config
-
 type DisplayData struct {
 	Data []struct {
 		Payload   string `json:"payload"`
@@ -37,7 +35,8 @@ type Term struct {
 
 func Display() {
 	// Init config.
-	err := cleanenv.ReadConfig(cfg.ConfigPath(), &cfg)
+	var cfg config.Config
+	err := cleanenv.ReadConfig(cfg.ConfigPath(), &cfg.Yaml)
 	if err != nil {
 		log.Fatalf("Config error: %s", err)
 	}
@@ -77,7 +76,7 @@ func Display() {
 				} else {
 					l.ScrollDown()
 					breakpoint_pos++
-					l, p, num_breakpoints = getUpdates(l, p, breakpoint_pos)
+					l, p, num_breakpoints = getUpdates(l, p, breakpoint_pos, cfg)
 					termui.Render(l, p)
 				}
 			case "k", "<Up>":
@@ -86,24 +85,24 @@ func Display() {
 				} else {
 					l.ScrollUp()
 					breakpoint_pos--
-					l, p, num_breakpoints = getUpdates(l, p, breakpoint_pos)
+					l, p, num_breakpoints = getUpdates(l, p, breakpoint_pos, cfg)
 					termui.Render(l, p)
 				}
 			case "<Resize>":
 				payload := e.Payload.(termui.Resize)
 				term.Width = payload.Width
 				term.Height = payload.Height
-				l, p, num_breakpoints = getUpdates(l, p, breakpoint_pos)
+				l, p, num_breakpoints = getUpdates(l, p, breakpoint_pos, cfg)
 				termui.Render(l, p)
 			}
 		case <-ticker:
-			l, p, num_breakpoints = getUpdates(l, p, breakpoint_pos)
+			l, p, num_breakpoints = getUpdates(l, p, breakpoint_pos, cfg)
 			termui.Render(l, p)
 		}
 	}
 }
 
-func getUpdates(list *widgets.List, paragraph *widgets.Paragraph, breakpoint_pos int) (l *widgets.List, p *widgets.Paragraph, num_breakpoints int) {
+func getUpdates(list *widgets.List, paragraph *widgets.Paragraph, breakpoint_pos int, cfg config.Config) (l *widgets.List, p *widgets.Paragraph, num_breakpoints int) {
 	var displayData *DisplayData
 
 	request, err := http.Get("http://" + cfg.Yaml.Host + ":" + cfg.Yaml.Port + "/api/get")

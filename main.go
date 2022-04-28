@@ -14,7 +14,6 @@ import (
 func main() {
 	// Configuration
 	var cfg config.Config
-	var cfgYaml config.ConfigYaml
 
 	if _, err := os.Stat(cfg.ConfigPath()); errors.Is(err, os.ErrNotExist) {
 		_, err := cfg.CreateConfig()
@@ -23,11 +22,10 @@ func main() {
 		}
 	}
 
-	err := cleanenv.ReadConfig(cfg.ConfigPath(), &cfgYaml)
+	err := cleanenv.ReadConfig(cfg.ConfigPath(), &cfg.Yaml)
 	if err != nil {
 		log.Fatalf("Config error: %s", err)
 	}
-
 	// @TODO: Logger
 
 	// Run

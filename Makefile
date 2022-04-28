@@ -3,5 +3,5 @@ export
 
 run:
 	go mod tidy && go mod download && \
-	go run  ./cmd/app $(CMD)
+	go run main.go $(CMD)
 .PHONY: run

@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/ilyakaznacheev/cleanenv"
 	"gopkg.in/yaml.v2"
 )
 
@@ -17,17 +16,6 @@ type Config struct {
 type ConfigYaml struct {
 	Host string `yaml:"host" env-default: "127.0.0.1"`
 	Port string `yaml:"port" env-default: "8080"`
-}
-
-func (cfg *Config) InitConfig() *ConfigYaml {
-	config := &ConfigYaml{}
-	err := cleanenv.ReadConfig(cfg.ConfigPath(), &config)
-
-	if err != nil {
-		panic(err)
-	}
-
-	return config
 }
 
 func (cfg *Config) ConfigPath() string {
