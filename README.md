@@ -5,6 +5,9 @@ The most simple way to debug your code.
 This is a simple TUI debugger, it starts a local server that accepts payloads from the adapters. Everything goes through HTTP requests, so it's very fast compared to other solutions.
 You can think of it as a console.log(), but instead of the browser you use the terminal and it works with any language.
 
+![image](https://user-images.githubusercontent.com/35064680/165762201-48997948-49df-4854-bab4-a8ff8fd572ab.png)
+
+
 ## Requirements
 
 - PMD-adapter for your language installed in the project.
