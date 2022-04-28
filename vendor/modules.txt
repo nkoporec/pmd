@@ -1,0 +1,114 @@
+# github.com/BurntSushi/toml v0.4.1
+## explicit
+github.com/BurntSushi/toml
+github.com/BurntSushi/toml/internal
+# github.com/cespare/xxhash/v2 v2.1.1
+github.com/cespare/xxhash/v2
+# github.com/dgraph-io/ristretto v0.1.0
+## explicit
+github.com/dgraph-io/ristretto
+github.com/dgraph-io/ristretto/z
+github.com/dgraph-io/ristretto/z/simd
+# github.com/dustin/go-humanize v1.0.0
+github.com/dustin/go-humanize
+# github.com/gin-contrib/sse v0.1.0
+github.com/gin-contrib/sse
+# github.com/gin-gonic/gin v1.7.4
+## explicit
+github.com/gin-gonic/gin
+github.com/gin-gonic/gin/binding
+github.com/gin-gonic/gin/internal/bytesconv
+github.com/gin-gonic/gin/internal/json
+github.com/gin-gonic/gin/render
+# github.com/gizak/termui/v3 v3.1.0
+## explicit
+github.com/gizak/termui/v3
+github.com/gizak/termui/v3/drawille
+github.com/gizak/termui/v3/widgets
+# github.com/go-playground/locales v0.13.0
+github.com/go-playground/locales
+github.com/go-playground/locales/currency
+# github.com/go-playground/universal-translator v0.17.0
+github.com/go-playground/universal-translator
+# github.com/go-playground/validator/v10 v10.4.1
+github.com/go-playground/validator/v10
+# github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+github.com/golang/glog
+# github.com/golang/protobuf v1.5.2
+github.com/golang/protobuf/proto
+# github.com/ilyakaznacheev/cleanenv v1.2.5
+## explicit
+github.com/ilyakaznacheev/cleanenv
+# github.com/inconshreveable/mousetrap v1.0.0
+github.com/inconshreveable/mousetrap
+# github.com/joho/godotenv v1.3.0
+github.com/joho/godotenv
+# github.com/json-iterator/go v1.1.11
+github.com/json-iterator/go
+# github.com/leodido/go-urn v1.2.0
+github.com/leodido/go-urn
+# github.com/mattn/go-isatty v0.0.12
+github.com/mattn/go-isatty
+# github.com/mattn/go-runewidth v0.0.9
+## explicit
+github.com/mattn/go-runewidth
+# github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7
+github.com/mitchellh/go-wordwrap
+# github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421
+github.com/modern-go/concurrent
+# github.com/modern-go/reflect2 v1.0.1
+github.com/modern-go/reflect2
+# github.com/nsf/termbox-go v0.0.0-20190121233118-02980233997d
+github.com/nsf/termbox-go
+# github.com/pkg/errors v0.9.1
+github.com/pkg/errors
+# github.com/spf13/cobra v1.2.1
+## explicit
+github.com/spf13/cobra
+# github.com/spf13/pflag v1.0.5
+github.com/spf13/pflag
+# github.com/ugorji/go/codec v1.1.7
+github.com/ugorji/go/codec
+# golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
+## explicit
+golang.org/x/crypto/sha3
+golang.org/x/crypto/ssh/terminal
+# golang.org/x/sys v0.0.0-20210510120138-977fb7262007
+golang.org/x/sys/cpu
+golang.org/x/sys/internal/unsafeheader
+golang.org/x/sys/unix
+golang.org/x/sys/windows
+# google.golang.org/protobuf v1.26.0
+google.golang.org/protobuf/encoding/prototext
+google.golang.org/protobuf/encoding/protowire
+google.golang.org/protobuf/internal/descfmt
+google.golang.org/protobuf/internal/descopts
+google.golang.org/protobuf/internal/detrand
+google.golang.org/protobuf/internal/encoding/defval
+google.golang.org/protobuf/internal/encoding/messageset
+google.golang.org/protobuf/internal/encoding/tag
+google.golang.org/protobuf/internal/encoding/text
+google.golang.org/protobuf/internal/errors
+google.golang.org/protobuf/internal/filedesc
+google.golang.org/protobuf/internal/filetype
+google.golang.org/protobuf/internal/flags
+google.golang.org/protobuf/internal/genid
+google.golang.org/protobuf/internal/impl
+google.golang.org/protobuf/internal/order
+google.golang.org/protobuf/internal/pragma
+google.golang.org/protobuf/internal/set
+google.golang.org/protobuf/internal/strs
+google.golang.org/protobuf/internal/version
+google.golang.org/protobuf/proto
+google.golang.org/protobuf/reflect/protodesc
+google.golang.org/protobuf/reflect/protoreflect
+google.golang.org/protobuf/reflect/protoregistry
+google.golang.org/protobuf/runtime/protoiface
+google.golang.org/protobuf/runtime/protoimpl
+google.golang.org/protobuf/types/descriptorpb
+# gopkg.in/yaml.v2 v2.4.0
+## explicit
+gopkg.in/yaml.v2
+# olympos.io/encoding/edn v0.0.0-20201019073823-d3554ca0b0a3
+## explicit
+olympos.io/encoding/edn
