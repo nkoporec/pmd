@@ -1,5 +1,9 @@
 # Poor's man debugger
 
+<h3>🚧 Under development, it works but some stuff might change in the future.</h3>
+
+<hr>
+
 The most simple way to debug your code.
 
 This is a simple TUI debugger, it starts a local server that accepts payloads from the adapters. Everything goes through HTTP requests, so it's very fast compared to other solutions.
