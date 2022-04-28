@@ -32,9 +32,17 @@ By default it will start a server at 127.0.0.1:8080. If this port does not work 
 
 PHP example:
 
+1. Start the PMD with `pmd listen`
+2. Set the breakpoint
+
 ```php
 pmd("Hello world!");
 ```
+
+3. Run the code and check the terminal
+
+
+You can move up/down between breakpoinst with `J` and `K`
 
 ## Changelog
 
