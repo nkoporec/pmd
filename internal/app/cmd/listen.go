@@ -32,5 +32,5 @@ func startServer(messages chan interface{}) {
 }
 
 func displayUi(messages chan interface{}) {
-	ui.Display(messages, cch)
+	ui.Display(messages, cch, cfg)
 }

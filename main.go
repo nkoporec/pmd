@@ -12,11 +12,9 @@ import (
 	"github.com/dgraph-io/ristretto"
 )
 
+var cfg config.Config
 
 func main() {
-	// Configuration
-	var cfg config.Config
-
 	if _, err := os.Stat(cfg.ConfigPath()); errors.Is(err, os.ErrNotExist) {
 		_, err := cfg.CreateConfig()
 		if err != nil {

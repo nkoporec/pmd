@@ -9,7 +9,6 @@ import (
 	"github.com/dgraph-io/ristretto"
 	termui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
-	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/nkoporec/pmd/config"
 	"github.com/nkoporec/pmd/internal/http"
 	"golang.org/x/crypto/ssh/terminal"
@@ -27,14 +26,7 @@ type Term struct {
 
 var displayedData []*http.RequestData
 
-func Display(messages chan interface{}, cch *ristretto.Cache) {
-	// Init config.
-	var cfg config.Config
-	err := cleanenv.ReadConfig(cfg.ConfigPath(), &cfg.Yaml)
-	if err != nil {
-		log.Fatalf("Config error: %s", err)
-	}
-
+func Display(messages chan interface{}, cch *ristretto.Cache, cfg *config.Config) {
 	if err := termui.Init(); err != nil {
 		log.Fatalf("failed to initialize termtermui: %v", err)
 	}
