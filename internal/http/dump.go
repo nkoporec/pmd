@@ -9,10 +9,17 @@ import (
 
 type RequestData struct {
 	Payload   string `json:"payload"`
+	Callstack   []CallstackData `json:"callstack"`
 	File      string `json:"file"`
 	Line      string `json:"line"`
 	Type      string `json:"type"`
 	Timestamp string `json:"timestamp"`
+}
+
+type CallstackData struct {
+	File   string `json:"file"`
+	Line      string `json:"line"`
+	Function      string `json:"function"`
 }
 
 func dump(c *gin.Context) {
@@ -23,6 +30,7 @@ func dump(c *gin.Context) {
 
 	// Request needs to have:
 	// payload - The data that the client dumped.
+	// callstack - The full callstack if applicable.
 	// file - File path.
 	// line - Line number.
 	// type - Debug type (PHP, JS, GO...)

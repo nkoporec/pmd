@@ -42,8 +42,8 @@ func Display(messages chan interface{}, cch *ristretto.Cache, cfg *config.Config
 		Height: termHeight,
 	}
 
-	breakpointsWidget, payloadWidget := elements(term.Width, term.Height)
-	termui.Render(breakpointsWidget, payloadWidget)
+	breakpointsWidget, callstackWidget, payloadWidget := elements(term.Width, term.Height)
+	termui.Render(breakpointsWidget, callstackWidget, payloadWidget)
 
 	selectedLine := 0
 
@@ -60,14 +60,26 @@ func Display(messages chan interface{}, cch *ristretto.Cache, cfg *config.Config
 				payloadWidget.Text = ""
 
 				cch.Set("breakpoints", []*http.RequestData{}, 1)
-				termui.Render(breakpointsWidget, payloadWidget)
+				termui.Render(breakpointsWidget, callstackWidget, payloadWidget)
 			case "j", "<Down>":
 				if selectedLine < len(displayedData)-1 {
 					breakpointsWidget.ScrollDown()
 					selectedLine++
 
+
+					// Show the selected breakpoint callstack.
+					callstackWidget.Rows = []string{}
+					for _, call := range displayedData[selectedLine].Callstack {
+						callstackRow := fmt.Sprintf(
+							"%s:%s:%s",
+							call.Line,
+							call.File,
+							call.Function,
+						)
+						callstackWidget.Rows = append(callstackWidget.Rows, callstackRow)
+					}
 					payloadWidget.Text = formatPayload(displayedData[selectedLine].Payload)
-					termui.Render(breakpointsWidget, payloadWidget)
+					termui.Render(breakpointsWidget, callstackWidget, payloadWidget)
 				}
 			case "k", "<Up>":
 				if selectedLine <= 0 {
@@ -75,21 +87,43 @@ func Display(messages chan interface{}, cch *ristretto.Cache, cfg *config.Config
 				} else {
 					breakpointsWidget.ScrollUp()
 					selectedLine--
+
+					// Show the selected breakpoint callstack.
+					callstackWidget.Rows = []string{}
+					for _, call := range displayedData[selectedLine].Callstack {
+						callstackRow := fmt.Sprintf(
+							"%s:%s:%s",
+							call.Line,
+							call.File,
+							call.Function,
+						)
+						callstackWidget.Rows = append(callstackWidget.Rows, callstackRow)
+					}
+
 					payloadWidget.Text = formatPayload(displayedData[selectedLine].Payload)
 				}
-				termui.Render(breakpointsWidget, payloadWidget)
+				termui.Render(breakpointsWidget, callstackWidget, payloadWidget)
+			case "J":
+				callstackWidget.ScrollDown()
+				termui.Render(breakpointsWidget, callstackWidget, payloadWidget)
+			case "K":
+				callstackWidget.ScrollUp()
+				termui.Render(breakpointsWidget, callstackWidget, payloadWidget)
 			case "<Resize>":
 				payload := e.Payload.(termui.Resize)
 				term.Width = payload.Width
 				term.Height = payload.Height
-				termui.Render(breakpointsWidget, payloadWidget)
+				termui.Render(breakpointsWidget, callstackWidget, payloadWidget)
 			}
 		case <-ticker:
 			select {
 			case msg := <-messages:
 				breakpointsWidget.Rows = []string{}
+				callstackWidget.Rows = []string{}
 				payloadWidget.Text = ""
+
 				data := msg.([]*http.RequestData)
+				// so we can use it later.
 				displayedData = data
 
 				for _, elem := range data {
@@ -98,20 +132,42 @@ func Display(messages chan interface{}, cch *ristretto.Cache, cfg *config.Config
 						panic(err)
 					}
 
-					row := fmt.Sprintf(
+					breakpoint := fmt.Sprintf(
 						"[%s] [%s] %s:[%s](fg:white,bg:red)",
 						elem.Type,
 						time.Unix(i, 0),
 						elem.Line,
 						elem.File,
 					)
+					breakpointsWidget.Rows = append(breakpointsWidget.Rows, breakpoint)
 
-					breakpointsWidget.Rows = append(breakpointsWidget.Rows, row)
+					for _, call := range elem.Callstack {
+						callstackRow := fmt.Sprintf(
+							"%s:%s:%s",
+							call.Line,
+							call.File,
+							call.Function,
+						)
+						callstackWidget.Rows = append(callstackWidget.Rows, callstackRow)
+					}
+
 				}
 
 				payloadWidget.Text = formatPayload(displayedData[selectedLine].Payload)
 
-				termui.Render(breakpointsWidget, payloadWidget)
+				// Show the selected breakpoint callstack.
+				callstackWidget.Rows = []string{}
+				for _, call := range displayedData[selectedLine].Callstack {
+					callstackRow := fmt.Sprintf(
+						"%s:%s:%s",
+						call.Line,
+						call.File,
+						call.Function,
+					)
+					callstackWidget.Rows = append(callstackWidget.Rows, callstackRow)
+				}
+
+				termui.Render(breakpointsWidget,callstackWidget, payloadWidget)
 			default:
 			}
 
@@ -119,22 +175,27 @@ func Display(messages chan interface{}, cch *ristretto.Cache, cfg *config.Config
 	}
 }
 
-func elements(width int, height int) (*widgets.List, *widgets.Paragraph) {
+func elements(width int, height int) (*widgets.List,*widgets.List, *widgets.Paragraph) {
 	breakpointsWidget := widgets.NewList()
 	breakpointsWidget.Title = "Breakpoints"
 	breakpointsWidget.Rows = []string{}
-
 	breakpointsWidget.TextStyle = termui.NewStyle(termui.ColorYellow)
 	breakpointsWidget.WrapText = false
-	breakpointsWidget.SetRect(0, 0, width, (height / 4))
+	breakpointsWidget.SetRect(0, 0, (width/2), (height / 4))
 
-	// Payload
+	callstackWidget := widgets.NewList()
+	callstackWidget.Title = "Call stack"
+	callstackWidget.Rows = []string{}
+	callstackWidget.TextStyle = termui.NewStyle(termui.ColorYellow)
+	callstackWidget.WrapText = false
+	callstackWidget.SetRect(width, 0, (width/2), (height / 4))
+	
 	payloadWidget := widgets.NewParagraph()
 	payloadWidget.Title = "Payload"
 	payloadWidget.Text = ""
 	payloadWidget.SetRect(0, (height / 4), width, height)
 
-	return breakpointsWidget, payloadWidget
+	return breakpointsWidget, callstackWidget, payloadWidget
 }
 
 func formatPayload(payload string) string {
