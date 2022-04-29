@@ -6,5 +6,5 @@ import (
 )
 
 func Run(cfg *config.Config) {
-	cmd.Execute();
+	cmd.Execute(cfg);
 }

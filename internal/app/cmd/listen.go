@@ -26,7 +26,7 @@ func startServer() {
 	// Start http server.
 	handler := gin.New()
 	http.NewRouter(handler)
-	handler.Run()
+	handler.Run(cfg.Yaml.Host + ":" + cfg.Yaml.Port)
 }
 
 func displayUi() {

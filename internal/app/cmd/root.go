@@ -3,8 +3,11 @@ package cmd
 import (
 	"os"
 
+	"github.com/nkoporec/pmd/config"
 	"github.com/spf13/cobra"
 )
+
+var cfg *config.Config
 
 var RootCmd = &cobra.Command{
 		Use:   "pmd",
@@ -15,7 +18,8 @@ var RootCmd = &cobra.Command{
 // to quickly create a Cobra application.`,
 }
 
-func Execute() {
+func Execute(c *config.Config) {
+	cfg = c
 	if err := RootCmd.Execute(); err != nil {
 		os.Exit(-1)
 	}
