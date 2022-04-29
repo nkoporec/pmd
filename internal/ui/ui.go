@@ -1,11 +1,12 @@
 package ui
 
 import (
-	"log"
-	"time"
 	"fmt"
+	"log"
 	"strconv"
+	"time"
 
+	"github.com/dgraph-io/ristretto"
 	termui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
 	"github.com/ilyakaznacheev/cleanenv"
@@ -25,7 +26,7 @@ type Term struct {
 
 var displayedData []*http.RequestData
 
-func Display(messages chan interface{}) {
+func Display(messages chan interface{}, cch *ristretto.Cache) {
 	// Init config.
 	var cfg config.Config
 	err := cleanenv.ReadConfig(cfg.ConfigPath(), &cfg.Yaml)
@@ -62,6 +63,10 @@ func Display(messages chan interface{}) {
 			case "q", "<C-c>":
 				return
 			case "<C-r>":
+				l.Rows = []string{}
+				p.Text = ""
+
+				cch.Set("breakpoints", []*http.RequestData{}, 1)
 				termui.Render(l, p)
 			case "j", "<Down>":
 				if breakpoint_pos < len(displayedData)-1 {

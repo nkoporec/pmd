@@ -43,13 +43,13 @@ func dump(c *gin.Context) {
 
 	// Get old data.
 	var dumpData []*RequestData
-	oldData, found := cache.Get("ddata")
+	oldData, found := cache.Get("breakpoints")
 	if found {
 		dumpData = oldData.([]*RequestData)
 	}
 
 	dumpData = append(dumpData, data)
-	cache.Set("ddata", dumpData, 1)
+	cache.Set("breakpoints", dumpData, 1)
 	messages <- dumpData
 }
 

@@ -9,6 +9,7 @@ import (
 
 	"github.com/nkoporec/pmd/config"
 	"github.com/nkoporec/pmd/internal/app"
+	"github.com/dgraph-io/ristretto"
 )
 
 func main() {
@@ -28,6 +29,16 @@ func main() {
 	}
 	// @TODO: Logger
 
+	// Init cache.
+	cache, err := ristretto.NewCache(&ristretto.Config{
+		NumCounters: 1e7,     // number of keys to track frequency of (10M).
+		MaxCost:     1 << 30, // maximum cost of cache (1GB).
+		BufferItems: 64,      // number of keys per Get buffer.
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	// Run
-	app.Run(&cfg)
+	app.Run(&cfg, cache)
 }

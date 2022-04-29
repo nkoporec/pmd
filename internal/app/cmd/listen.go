@@ -27,10 +27,10 @@ func startServer(messages chan interface{}) {
 
 	// Start http server.
 	handler := gin.New()
-	http.NewRouter(handler, messages)
+	http.NewRouter(handler, messages, cch)
 	handler.Run(cfg.Yaml.Host + ":" + cfg.Yaml.Port)
 }
 
 func displayUi(messages chan interface{}) {
-	ui.Display(messages)
+	ui.Display(messages, cch)
 }
