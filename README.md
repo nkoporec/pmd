@@ -46,7 +46,7 @@ pmd("Hello world!");
 3. Run the code and check the terminal
 
 
-### Commands
+### Keybindings
 
 - Breakpoint up  -> `k`
 - Breakpoint down -> `j`
