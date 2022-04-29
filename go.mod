@@ -10,6 +10,7 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.2.5
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/spf13/cobra v1.2.1
+	github.com/tidwall/pretty v1.2.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	gopkg.in/yaml.v2 v2.4.0
 	olympos.io/encoding/edn v0.0.0-20201019073823-d3554ca0b0a3 // indirect

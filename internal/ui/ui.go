@@ -13,6 +13,7 @@ import (
 	"github.com/nkoporec/pmd/config"
 	"github.com/nkoporec/pmd/internal/http"
 	"golang.org/x/crypto/ssh/terminal"
+	"github.com/tidwall/pretty" 
 )
 
 const (
@@ -73,7 +74,7 @@ func Display(messages chan interface{}, cch *ristretto.Cache) {
 					l.ScrollDown()
 					breakpoint_pos++
 
-					p.Text = displayedData[breakpoint_pos].Payload
+					p.Text = formatPayload(displayedData[breakpoint_pos].Payload)
 					termui.Render(l, p)
 				}
 			case "k", "<Up>":
@@ -82,7 +83,7 @@ func Display(messages chan interface{}, cch *ristretto.Cache) {
 				} else {
 					l.ScrollUp()
 					breakpoint_pos--
-					p.Text = displayedData[breakpoint_pos].Payload
+					p.Text = formatPayload(displayedData[breakpoint_pos].Payload)
 				}
 				termui.Render(l, p)
 			case "<Resize>":
@@ -117,7 +118,8 @@ func Display(messages chan interface{}, cch *ristretto.Cache) {
 					l.Rows = append(l.Rows, row)
 				}
 
-				p.Text = displayedData[breakpoint_pos].Payload
+				p.Text = formatPayload(displayedData[breakpoint_pos].Payload)
+
 				termui.Render(l, p)
 			default:
 			}
@@ -142,4 +144,8 @@ func elements(width int, height int) (*widgets.List, *widgets.Paragraph) {
 	paragraph.SetRect(0, (height / 4), width, height)
 
 	return l, paragraph
+}
+
+func formatPayload(payload string) string {
+	return string(pretty.Pretty([]byte(payload)))
 }

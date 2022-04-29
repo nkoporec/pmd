@@ -12,6 +12,7 @@ import (
 	"github.com/dgraph-io/ristretto"
 )
 
+
 func main() {
 	// Configuration
 	var cfg config.Config
