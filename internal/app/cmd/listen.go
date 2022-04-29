@@ -11,8 +11,10 @@ var listenCmd = &cobra.Command{
 		Use:   "listen",
 		Short: "Starts a debugging server.",
 		Run: func(cmd *cobra.Command, args []string) {
-			go startServer()
-			displayUi()
+			messages := make(chan interface{})
+
+			go startServer(messages)
+			displayUi(messages)
 		},
 }
 
@@ -20,15 +22,15 @@ func init() {
   RootCmd.AddCommand(listenCmd)
 }
 
-func startServer() {
+func startServer(messages chan interface{}) {
 	gin.SetMode(gin.ReleaseMode)
 
 	// Start http server.
 	handler := gin.New()
-	http.NewRouter(handler)
+	http.NewRouter(handler, messages)
 	handler.Run(cfg.Yaml.Host + ":" + cfg.Yaml.Port)
 }
 
-func displayUi() {
-	ui.Display()
+func displayUi(messages chan interface{}) {
+	ui.Display(messages)
 }

@@ -17,6 +17,7 @@ type RequestData struct {
 
 func dump(c *gin.Context) {
 	cache := c.MustGet("cache").(*ristretto.Cache)
+	messages := c.MustGet("messages").(chan interface{})
 
 	var data *RequestData
 
@@ -48,8 +49,8 @@ func dump(c *gin.Context) {
 	}
 
 	dumpData = append(dumpData, data)
-
 	cache.Set("ddata", dumpData, 1)
+	messages <- dumpData
 }
 
 func validateRequest(data *RequestData) bool {

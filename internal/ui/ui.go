@@ -1,17 +1,16 @@
 package ui
 
 import (
-	"encoding/json"
-	"fmt"
 	"log"
-	"net/http"
-	"strconv"
 	"time"
+	"fmt"
+	"strconv"
 
 	termui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/nkoporec/pmd/config"
+	"github.com/nkoporec/pmd/internal/http"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
@@ -19,22 +18,14 @@ const (
 	timeFormat = "2006-01-02 20:00:00"
 )
 
-type DisplayData struct {
-	Data []struct {
-		Payload   string `json:"payload"`
-		File      string `json:"file"`
-		Line      string `json:"line"`
-		Type      string `json:"type"`
-		Timestamp string `json:"timestamp"`
-	} `json:"data"`
-}
-
 type Term struct {
 	Width  int
 	Height int
 }
 
-func Display() {
+var displayedData []*http.RequestData
+
+func Display(messages chan interface{}) {
 	// Init config.
 	var cfg config.Config
 	err := cleanenv.ReadConfig(cfg.ConfigPath(), &cfg.Yaml)
@@ -61,7 +52,6 @@ func Display() {
 	termui.Render(l, p)
 
 	breakpoint_pos := 0
-	num_breakpoints := 0
 
 	uiEvents := termui.PollEvents()
 	ticker := time.NewTicker(time.Second).C
@@ -72,15 +62,13 @@ func Display() {
 			case "q", "<C-c>":
 				return
 			case "<C-r>":
-				l, p, num_breakpoints = clearScreen(l, p, breakpoint_pos, cfg)
 				termui.Render(l, p)
 			case "j", "<Down>":
-				if breakpoint_pos >= num_breakpoints-1 {
-					l.ScrollDown()
-				} else {
+				if breakpoint_pos < len(displayedData)-1 {
 					l.ScrollDown()
 					breakpoint_pos++
-					l, p, num_breakpoints = getUpdates(l, p, breakpoint_pos, cfg)
+
+					p.Text = displayedData[breakpoint_pos].Payload
 					termui.Render(l, p)
 				}
 			case "k", "<Up>":
@@ -89,81 +77,48 @@ func Display() {
 				} else {
 					l.ScrollUp()
 					breakpoint_pos--
-					l, p, num_breakpoints = getUpdates(l, p, breakpoint_pos, cfg)
-					termui.Render(l, p)
+					p.Text = displayedData[breakpoint_pos].Payload
 				}
+				termui.Render(l, p)
 			case "<Resize>":
 				payload := e.Payload.(termui.Resize)
 				term.Width = payload.Width
 				term.Height = payload.Height
-				l, p, num_breakpoints = getUpdates(l, p, breakpoint_pos, cfg)
 				termui.Render(l, p)
 			}
 		case <-ticker:
-			l, p, num_breakpoints = getUpdates(l, p, breakpoint_pos, cfg)
-			termui.Render(l, p)
+			select {
+			case msg := <-messages:
+				l.Rows = []string{}
+				p.Text = ""
+				data := msg.([]*http.RequestData)
+				displayedData = data
+
+				for _, elem := range data {
+					i, err := strconv.ParseInt(elem.Timestamp, 10, 64)
+					if err != nil {
+						panic(err)
+					}
+
+					row := fmt.Sprintf(
+						"[%s] [%s] %s:[%s](fg:white,bg:red)",
+						elem.Type,
+						time.Unix(i, 0),
+						elem.Line,
+						elem.File,
+					)
+
+					// Add to list.
+					l.Rows = append(l.Rows, row)
+				}
+
+				p.Text = displayedData[breakpoint_pos].Payload
+				termui.Render(l, p)
+			default:
+			}
+
 		}
 	}
-}
-
-func getUpdates(list *widgets.List, paragraph *widgets.Paragraph, breakpoint_pos int, cfg config.Config) (l *widgets.List, p *widgets.Paragraph, num_breakpoints int) {
-	var displayData *DisplayData
-
-	request, err := http.Get("http://" + cfg.Yaml.Host + ":" + cfg.Yaml.Port + "/api/get")
-	if err != nil {
-		panic(err)
-	}
-	defer request.Body.Close()
-
-	err = json.NewDecoder(request.Body).Decode(&displayData)
-	if err != nil {
-		panic(err)
-	}
-
-	// Clear list and paragraph
-	list.Rows = []string{}
-	paragraph.Text = ""
-
-	for _, elem := range displayData.Data {
-		i, err := strconv.ParseInt(elem.Timestamp, 10, 64)
-		if err != nil {
-			panic(err)
-		}
-
-		row := fmt.Sprintf(
-			"[%s] [%s] %s:[%s](fg:white,bg:red)",
-			elem.Type,
-			time.Unix(i, 0),
-			elem.Line,
-			elem.File,
-		)
-
-		// Add to list.
-		list.Rows = append(list.Rows, row)
-	}
-
-	if len(displayData.Data) <= 0 {
-		paragraph.Text = ""
-		return list, paragraph, len(displayData.Data)
-	}
-
-	paragraph.Text = displayData.Data[breakpoint_pos].Payload
-	return list, paragraph, len(displayData.Data)
-}
-
-func clearScreen(list *widgets.List, paragraph *widgets.Paragraph, breakpoint_pos int, cfg config.Config) (l *widgets.List, p *widgets.Paragraph, num_breakpoints int) {
-	request, err := http.Get("http://" + cfg.Yaml.Host + ":" + cfg.Yaml.Port + "/api/clear")
-	if err != nil {
-		panic(err)
-	}
-	defer request.Body.Close()
-
-	// Clear list and paragraph
-	list.Rows = []string{}
-	paragraph.Text = ""
-	breakpoint_pos = 0
-	num_breakpoints = 0
-	return list, paragraph, 0
 }
 
 func elements(width int, height int) (*widgets.List, *widgets.Paragraph) {

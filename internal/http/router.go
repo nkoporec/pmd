@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Cache() gin.HandlerFunc {
+func Cache(messages chan interface{}) gin.HandlerFunc {
 	cache, err := ristretto.NewCache(&ristretto.Config{
 		NumCounters: 1e7,     // number of keys to track frequency of (10M).
 		MaxCost:     1 << 30, // maximum cost of cache (1GB).
@@ -18,12 +18,13 @@ func Cache() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		c.Set("cache", cache)
+		c.Set("messages", messages)
 		c.Next()
 	}
 }
 
-func NewRouter(handler *gin.Engine) {
-	handler.Use(Cache())
+func NewRouter(handler *gin.Engine, messages chan interface{}) {
+	handler.Use(Cache(messages))
 
 	// Routes.
 	h := handler.Group("/api")
@@ -34,6 +35,4 @@ func NewRouter(handler *gin.Engine) {
 
 func newApiRoutes(handler *gin.RouterGroup) {
 	handler.POST("/dump", dump)
-	handler.GET("/get", get)
-	handler.GET("/clear", clear)
 }
