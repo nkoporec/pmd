@@ -48,8 +48,10 @@ pmd("Hello world!");
 
 ### Commands
 
-- Move up -> `K`
-- Move down -> `J`
+- Breakpoint up  -> `k`
+- Breakpoint down -> `j`
+- Call stack up  -> `K`
+- Call stack down -> `J`
 - Clear screen -> `Ctrl + r`
 
 ## Changelog
