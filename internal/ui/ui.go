@@ -11,8 +11,8 @@ import (
 	"github.com/gizak/termui/v3/widgets"
 	"github.com/nkoporec/pmd/config"
 	"github.com/nkoporec/pmd/internal/http"
+	"github.com/tidwall/pretty"
 	"golang.org/x/crypto/ssh/terminal"
-	"github.com/tidwall/pretty" 
 )
 
 const (
@@ -57,6 +57,7 @@ func Display(messages chan interface{}, cch *ristretto.Cache, cfg *config.Config
 				return
 			case "<C-r>":
 				breakpointsWidget.Rows = []string{}
+				callstackWidget.Rows = []string{}
 				payloadWidget.Text = ""
 
 				cch.Set("breakpoints", []*http.RequestData{}, 1)
@@ -65,7 +66,6 @@ func Display(messages chan interface{}, cch *ristretto.Cache, cfg *config.Config
 				if selectedLine < len(displayedData)-1 {
 					breakpointsWidget.ScrollDown()
 					selectedLine++
-
 
 					// Show the selected breakpoint callstack.
 					callstackWidget.Rows = []string{}
@@ -167,7 +167,7 @@ func Display(messages chan interface{}, cch *ristretto.Cache, cfg *config.Config
 					callstackWidget.Rows = append(callstackWidget.Rows, callstackRow)
 				}
 
-				termui.Render(breakpointsWidget,callstackWidget, payloadWidget)
+				termui.Render(breakpointsWidget, callstackWidget, payloadWidget)
 			default:
 			}
 
@@ -175,21 +175,21 @@ func Display(messages chan interface{}, cch *ristretto.Cache, cfg *config.Config
 	}
 }
 
-func elements(width int, height int) (*widgets.List,*widgets.List, *widgets.Paragraph) {
+func elements(width int, height int) (*widgets.List, *widgets.List, *widgets.Paragraph) {
 	breakpointsWidget := widgets.NewList()
 	breakpointsWidget.Title = "Breakpoints"
 	breakpointsWidget.Rows = []string{}
 	breakpointsWidget.TextStyle = termui.NewStyle(termui.ColorYellow)
 	breakpointsWidget.WrapText = false
-	breakpointsWidget.SetRect(0, 0, (width/2), (height / 4))
+	breakpointsWidget.SetRect(0, 0, (width / 2), (height / 4))
 
 	callstackWidget := widgets.NewList()
 	callstackWidget.Title = "Call stack"
 	callstackWidget.Rows = []string{}
 	callstackWidget.TextStyle = termui.NewStyle(termui.ColorYellow)
 	callstackWidget.WrapText = false
-	callstackWidget.SetRect(width, 0, (width/2), (height / 4))
-	
+	callstackWidget.SetRect(width, 0, (width / 2), (height / 4))
+
 	payloadWidget := widgets.NewParagraph()
 	payloadWidget.Title = "Payload"
 	payloadWidget.Text = ""
