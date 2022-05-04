@@ -59,6 +59,7 @@ func Display(messages chan interface{}, cch *ristretto.Cache, cfg *config.Config
 				breakpointsWidget.Rows = []string{}
 				callstackWidget.Rows = []string{}
 				payloadWidget.Text = ""
+				selectedLine = 0
 
 				cch.Set("breakpoints", []*http.RequestData{}, 1)
 				termui.Render(breakpointsWidget, callstackWidget, payloadWidget)
