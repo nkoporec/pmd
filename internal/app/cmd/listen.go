@@ -43,13 +43,7 @@ func startServer(messages chan interface{}) {
 	}
 	defer resp.Body.Close()
 
-	fmt.Println(
-		fmt.Sprintln(
-			"Host %s:%s is already in use.",
-			cfg.Yaml.Host,
-			cfg.Yaml.Port,
-		),
-	)
+	fmt.Println("Host is already in use.")
 	os.Exit(1)
 }
 
