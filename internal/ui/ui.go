@@ -42,8 +42,8 @@ func Display(messages chan interface{}, cch *ristretto.Cache, cfg *config.Config
 		Height: termHeight,
 	}
 
-	breakpointsWidget, callstackWidget, payloadWidget := elements(term.Width, term.Height)
-	termui.Render(breakpointsWidget, callstackWidget, payloadWidget)
+	breakpointsWidget, callstackWidget, payloadWidget, statusWidget := elements(term.Width, term.Height, cfg)
+	termui.Render(breakpointsWidget, callstackWidget, payloadWidget, statusWidget)
 
 	selectedLine := 0
 
@@ -176,27 +176,34 @@ func Display(messages chan interface{}, cch *ristretto.Cache, cfg *config.Config
 	}
 }
 
-func elements(width int, height int) (*widgets.List, *widgets.List, *widgets.Paragraph) {
+func elements(width int, height int, cfg *config.Config) (*widgets.List, *widgets.List, *widgets.Paragraph, *widgets.Paragraph) {
+	statusWidgetHeight := height / 25
+	statusWidget := widgets.NewParagraph()
+	statusWidget.Title = "Status"
+	statusWidget.Text = fmt.Sprintf("Listening on %s:%s", cfg.Yaml.Host, cfg.Yaml.Port)
+	statusWidget.TextStyle = termui.NewStyle(termui.ColorGreen)
+	statusWidget.SetRect(0, 0, width, statusWidgetHeight)
+
 	breakpointsWidget := widgets.NewList()
 	breakpointsWidget.Title = "Breakpoints"
 	breakpointsWidget.Rows = []string{}
 	breakpointsWidget.TextStyle = termui.NewStyle(termui.ColorYellow)
 	breakpointsWidget.WrapText = false
-	breakpointsWidget.SetRect(0, 0, (width / 2), (height / 4))
+	breakpointsWidget.SetRect(0, statusWidgetHeight, (width / 2), (height / 4))
 
 	callstackWidget := widgets.NewList()
 	callstackWidget.Title = "Call stack"
 	callstackWidget.Rows = []string{}
 	callstackWidget.TextStyle = termui.NewStyle(termui.ColorYellow)
 	callstackWidget.WrapText = false
-	callstackWidget.SetRect(width, 0, (width / 2), (height / 4))
+	callstackWidget.SetRect(width, statusWidgetHeight, (width / 2), (height / 4))
 
 	payloadWidget := widgets.NewParagraph()
 	payloadWidget.Title = "Payload"
 	payloadWidget.Text = ""
 	payloadWidget.SetRect(0, (height / 4), width, height)
 
-	return breakpointsWidget, callstackWidget, payloadWidget
+	return breakpointsWidget, callstackWidget, payloadWidget, statusWidget
 }
 
 func formatPayload(payload string) string {
