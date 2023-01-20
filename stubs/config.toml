@@ -1,0 +1,15 @@
+# An example config file.
+# On Unix like system this needs to be under  ~/.config/pmd/ in order to be autoloaded
+# On Windows this needs to be under ~/.pmd/ to be autoloaded.
+# You can also pass an argument to pmd command (-c FILE_PATH) to load the config file at runtime.
+
+[server]
+# Port number on which the backend server will receive the dump data.
+# This needs to be aligned with the adapter port.
+# Default: 6969
+port = 6969
+[keymap]
+# Leader key can be any of valid UTF-8 character.
+# We currently don't support special keys such as Enter, Backspace ...
+# Default: ,
+leader_key = ","

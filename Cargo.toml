@@ -1,0 +1,17 @@
+[package]
+name = "pmd"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+crossterm = { version = "0.25"}
+tui = { version = "0.17", features = ["termion"] }
+axum = "0.6.2"
+toml = "0.5.10"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1.0.136", features = ["derive"] }
+clap = { version = "4.1.1", features = ["derive"] }
+home = "0.5.4"
+rust-embed = "6.4.2"
