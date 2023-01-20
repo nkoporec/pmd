@@ -38,19 +38,20 @@ An example API for an adapter
 
 ```
 curl --request POST \
-  --url http://localhost:3000/dump \
+  --url http://localhost:6969/dump \
   --header 'Content-Type: application/json' \
   --data '{
-	"timestamp": "3223232",
-	"line": "6",
-	"connector_type": "php",
-	"filepath": "/home/nkoporec/personal/drupal/web/index.php",
-	"callstack": [
-		"10:/home/nkoporec/personal/drupal/web/index.php",
-		"100:/home/nkoporec/personal/drupal/web/index.php",
-		"2213:/home/nkoporec/personal/drupal/web/index.php"
-	],
-	"payload": ""
+        "timestamp": "3223232",
+        "line": "6",
+        "connector_type": "php",
+        "filepath": "/home/project/drupal/web/index.php",
+        "callstack": [
+                {
+                        "filepath": "/home/project/drupal/web/index.php",
+                        "line": "10"
+                }
+        ],
+        "payload": ""
 }'
 ```
 
