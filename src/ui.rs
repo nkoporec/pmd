@@ -3,6 +3,7 @@ use std::{io, sync::{Arc, Mutex}, time::{Duration, Instant}};
 use crossterm::{terminal::enable_raw_mode, event::poll};
 use tokio::sync::broadcast::Receiver;
 use tui::{backend::CrosstermBackend, Terminal, text::Spans};
+use tui_tree_widget::{TreeItem, TreeState};
 
 use crate::{server::Breakpoint, ui::{keymap::{InputMode, ListMode}, layout::{BreakpointList, CallstackList}}, config::Config};
 
@@ -11,11 +12,11 @@ mod layout;
 
 // Our shared state
 #[derive(Debug)]
-pub struct UiState {
+pub struct UiState<'a> {
     pub list_state: ListState,
     pub list_mode: ListMode, 
+    pub tree_state: StatefulTree<'a>, 
     pub input_mode: InputMode, 
-    pub variables: String,
     pub popup: Popup,
     pub status_bar: StatusBar,
     pub leader_tick_time: Instant,
@@ -96,11 +97,63 @@ impl StatusBar {
     }
 }
 
-impl UiState {
-    pub fn new(config: Config) -> UiState {
+#[derive(Debug)]
+pub struct StatefulTree<'a> {
+    pub state: TreeState,
+    pub items: Vec<TreeItem<'a>>,
+}
+
+impl<'a> StatefulTree<'a> {
+    #[allow(dead_code)]
+    pub fn new() -> Self {
+        Self {
+            state: TreeState::default(),
+            items: Vec::new(),
+        }
+    }
+
+    pub fn with_items(items: Vec<TreeItem<'a>>) -> Self {
+        Self {
+            state: TreeState::default(),
+            items,
+        }
+    }
+
+    pub fn first(&mut self) {
+        self.state.select_first();
+    }
+
+    pub fn last(&mut self) {
+        self.state.select_last(&self.items);
+    }
+
+    pub fn down(&mut self) {
+        self.state.key_down(&self.items);
+    }
+
+    pub fn up(&mut self) {
+        self.state.key_up(&self.items);
+    }
+
+    pub fn left(&mut self) {
+        self.state.key_left();
+    }
+
+    pub fn right(&mut self) {
+        self.state.key_right();
+    }
+
+    pub fn toggle(&mut self) {
+        self.state.toggle_selected();
+    }
+}
+
+
+impl<'a> UiState<'a> {
+    pub fn new(config: Config) -> UiState<'a> {
         UiState {
             list_state: ListState::new(),
-            variables: "".to_string(),
+            tree_state: StatefulTree::with_items(vec![]),
             popup: Popup::new(),
             status_bar: StatusBar::new(),
             input_mode: InputMode::Normal,

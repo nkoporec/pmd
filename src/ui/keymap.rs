@@ -8,7 +8,7 @@ use crossterm::event::{self, Event, KeyCode};
 use serde::Deserialize;
 use tui::{backend::CrosstermBackend, Terminal};
 
-use crate::{server::Callstack, ui::UiState};
+use crate::ui::{layout::tree, UiState};
 
 #[derive(Debug, Deserialize, Clone, Eq, Hash, PartialEq)]
 pub enum InputMode {
@@ -93,7 +93,8 @@ pub fn normal_keymap(
         KeyCode::Char('j') => match state.list_mode {
             ListMode::Breakpoint => {
                 state.list_state.breakpoint.next();
-                state.variables = state.list_state.breakpoint.get_value();
+                state.tree_state.items =
+                    tree::build_tree_items(state.list_state.breakpoint.get_value());
                 state.list_state.callstack.items = state.list_state.breakpoint.get_callstack();
             }
             ListMode::Callstack => {
@@ -103,7 +104,8 @@ pub fn normal_keymap(
         KeyCode::Down => match state.list_mode {
             ListMode::Breakpoint => {
                 state.list_state.breakpoint.next();
-                state.variables = state.list_state.breakpoint.get_value();
+                state.tree_state.items =
+                    tree::build_tree_items(state.list_state.breakpoint.get_value());
                 state.list_state.callstack.items = state.list_state.breakpoint.get_callstack();
             }
             ListMode::Callstack => {
@@ -113,7 +115,8 @@ pub fn normal_keymap(
         KeyCode::Char('k') => match state.list_mode {
             ListMode::Breakpoint => {
                 state.list_state.breakpoint.previous();
-                state.variables = state.list_state.breakpoint.get_value();
+                state.tree_state.items =
+                    tree::build_tree_items(state.list_state.breakpoint.get_value());
                 state.list_state.callstack.items = state.list_state.breakpoint.get_callstack();
             }
             ListMode::Callstack => {
@@ -123,7 +126,8 @@ pub fn normal_keymap(
         KeyCode::Up => match state.list_mode {
             ListMode::Breakpoint => {
                 state.list_state.breakpoint.previous();
-                state.variables = state.list_state.breakpoint.get_value();
+                state.tree_state.items =
+                    tree::build_tree_items(state.list_state.breakpoint.get_value());
                 state.list_state.callstack.items = state.list_state.breakpoint.get_callstack();
             }
             ListMode::Callstack => {
@@ -202,6 +206,30 @@ pub fn inspection_keymap(
             state
                 .status_bar
                 .set_status(format!(":{}", state.input_mode.to_string()));
+        }
+        KeyCode::Char('l') => {
+            state.tree_state.right();
+        }
+        KeyCode::Left => {
+            state.tree_state.left();
+        }
+        KeyCode::Char('h') => {
+            state.tree_state.left();
+        }
+        KeyCode::Right => {
+            state.tree_state.left();
+        }
+        KeyCode::Char('j') => {
+            state.tree_state.down();
+        }
+        KeyCode::Down => {
+            state.tree_state.down();
+        }
+        KeyCode::Char('k') => {
+            state.tree_state.up();
+        }
+        KeyCode::Up => {
+            state.tree_state.up();
         }
         _ => {}
     }

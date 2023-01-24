@@ -9,6 +9,8 @@ use tui::{
     Frame,
 };
 
+pub mod tree;
+
 use crate::{
     server::{Breakpoint, Callstack},
     ui::UiState,
@@ -288,9 +290,11 @@ pub fn render_main(state: &mut UiState, f: &mut Frame<CrosstermBackend<Stdout>>)
         &mut state.list_state.callstack.state,
     );
 
-    let vars = Paragraph::new(state.variables.clone())
-        .block(Block::default().title("Variables").borders(Borders::ALL));
-    f.render_widget(vars, bottom_layout[0]);
+    let items = tree::render_tree(
+        state.tree_state.state.to_owned(),
+        state.tree_state.items.to_vec(),
+    );
+    f.render_stateful_widget(items, bottom_layout[0], &mut state.tree_state.state);
 
     let status_bar = Paragraph::new(state.status_bar.get_status().clone())
         .block(Block::default().borders(Borders::NONE));
