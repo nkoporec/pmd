@@ -43,14 +43,12 @@ pub fn build_tree_items(payload: String) -> Vec<TreeItem<'static>> {
 
             // Strings and numbers.
             if value.is_string() || value.is_number() {
-                items.push(TreeItem::new(
-                    key.to_string(),
-                    vec![TreeItem::new_leaf(value.to_string())],
-                ));
+                items.push(TreeItem::new_leaf(value.to_string()))
             }
 
             if value.is_object() {
-                let recursive_tree = recursive(value, key.to_string());
+                let leaf = TreeItem::new_leaf(key.to_string());
+                let recursive_tree = recursive_object(value, &mut leaf.clone());
                 items.push(recursive_tree);
             }
         }
@@ -59,8 +57,7 @@ pub fn build_tree_items(payload: String) -> Vec<TreeItem<'static>> {
     return items;
 }
 
-fn recursive(value: &Value, key: String) -> TreeItem<'static> {
-    let mut result = TreeItem::new_leaf(key);
+fn recursive_object<'a>(value: &Value, result: &mut TreeItem<'a>) -> TreeItem<'a> {
     let obj = value.as_object().unwrap();
 
     for item in obj {
@@ -76,9 +73,9 @@ fn recursive(value: &Value, key: String) -> TreeItem<'static> {
         }
 
         if value.is_object() {
-            recursive(value, key.to_string());
+            recursive_object(value, result);
         }
     }
 
-    return result;
+    return result.clone();
 }
