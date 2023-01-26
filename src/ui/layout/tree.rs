@@ -3,14 +3,14 @@ use tui::{
     style::{Color, Modifier, Style},
     widgets::{Block, Borders},
 };
-use tui_tree_widget::{Tree, TreeItem, TreeState};
+use tui_tree_widget::{Tree, TreeItem};
 
-pub fn render_tree(tree_state: TreeState, items: Vec<TreeItem>) -> Tree {
+pub fn render_tree(items: Vec<TreeItem>) -> Tree {
     let items = Tree::new(items)
         .block(
             Block::default()
                 .borders(Borders::ALL)
-                .title(format!("Tree Widget {:?}", tree_state)),
+                .title(format!("Inspection")),
         )
         .highlight_style(
             Style::default()
@@ -48,7 +48,7 @@ pub fn build_tree_items(payload: String) -> Vec<TreeItem<'static>> {
 
             if value.is_object() {
                 let leaf = TreeItem::new_leaf(key.to_string());
-                let recursive_tree = recursive_object(value, &mut leaf.clone());
+                let recursive_tree = recursive_flatten(value, &mut leaf.clone());
                 items.push(recursive_tree);
             }
         }
@@ -57,7 +57,8 @@ pub fn build_tree_items(payload: String) -> Vec<TreeItem<'static>> {
     return items;
 }
 
-fn recursive_object<'a>(value: &Value, result: &mut TreeItem<'a>) -> TreeItem<'a> {
+// Recursive flatten an object, so we can extract only strings and numbers.
+fn recursive_flatten<'a>(value: &Value, result: &mut TreeItem<'a>) -> TreeItem<'a> {
     let obj = value.as_object().unwrap();
 
     for item in obj {
@@ -73,7 +74,7 @@ fn recursive_object<'a>(value: &Value, result: &mut TreeItem<'a>) -> TreeItem<'a
         }
 
         if value.is_object() {
-            recursive_object(value, result);
+            recursive_flatten(value, result);
         }
     }
 

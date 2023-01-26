@@ -290,10 +290,7 @@ pub fn render_main(state: &mut UiState, f: &mut Frame<CrosstermBackend<Stdout>>)
         &mut state.list_state.callstack.state,
     );
 
-    let items = tree::render_tree(
-        state.tree_state.state.to_owned(),
-        state.tree_state.items.to_vec(),
-    );
+    let items = tree::render_tree(state.tree_state.items.to_vec());
     f.render_stateful_widget(items, bottom_layout[0], &mut state.tree_state.state);
 
     let status_bar = Paragraph::new(state.status_bar.get_status().clone())

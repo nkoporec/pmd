@@ -231,6 +231,10 @@ pub fn inspection_keymap(
         KeyCode::Up => {
             state.tree_state.up();
         }
+        KeyCode::Char('q') => {
+            terminal.clear().unwrap();
+            process::exit(0);
+        }
         _ => {}
     }
 }
@@ -249,6 +253,10 @@ pub fn visual_keymap(
                     .status_bar
                     .set_status(format!(":{}", state.input_mode.to_string()));
             }
+        }
+        KeyCode::Char('q') => {
+            terminal.clear().unwrap();
+            process::exit(0);
         }
         _ => {}
     }
