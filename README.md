@@ -18,19 +18,71 @@ You can think of it as a console.log(), but instead of the browser you use the t
 
 ## Installation
 
-TODO
+ You can install it via cargo.
+ 
+  1. Install cargo (https://doc.rust-lang.org/cargo/)
+  2. Run `cargo install pmd`
 
 ## Configuration
 
-TODO
+The default config is located at ~/.config/pmd/config.toml (for UNIX like systems) or ~/.pmd/config.toml (for Windows).
 
-## Usage
-
-TODO
+You can override the default config by passing a -c (--config) flag that points to the config.toml file.
 
 ### Keybindings
 
-TODO
+Keybindings are VIM-like. The `leader` key is set by default to `,` , but you can override this via config.
+
+Debugger consists of three input states
+  - Normal
+  - Visual
+  - Inspection
+  
+### Normal
+
+ Normal mode enables you to scroll all the breakpoints and callstack data.
+ 
+ It has the following keybindings:
+ 
+   - `j` (or `Down arrow`) -> Move down the list
+   - `k` (or `Up arrow`) -> Move up the list
+   - `<leader> + h` -> Move to the left
+   - `<leader> + l` -> Move to the right
+   - `i` -> Set inspection mode, to inspect the dumped variables
+   - `v` -> Set visual mode and open the selected breakpoint/callstack in a popup for more details.
+   - `q` -> Quit
+   
+ ### Visual
+ 
+  Visual mode is meant to show additional data that are not present in normal mode for breakpoints/callstack.
+  
+  It has the following keybindings:
+  
+   - `q` -> Quit
+   - `ESC` -> Go to normal mode
+   
+ ### Inspection
+ 
+  Inspection mode enables you to inspect the tree-like data that were sent by the adapters.
+  
+  It has the following keybindings:
+  
+   - `j` (or `Down arrow`) -> Move down the tree
+   - `k` (or `Up arrow`) -> Move up the tree
+   - `h` -> Close the selected item
+   - `l` -> Expand selected item.
+   - `q` -> Quit
+   - `ESC` -> Go to normal mode
+
+
+## Adapters
+
+Adapters are language specific packages that sends the actual debug data to PMD via HTTP.
+
+Currently supported
+
+  - PHP (https://github.com/nkoporec/pmd-php}
+  
 
 ### Adapter API
 
@@ -63,17 +115,10 @@ Types:
  - callstack -> Array (where key is a line number (int), and value is a file path (string)
  - payload -> JSON encoded string
 
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Contributing
-
-Please see [CONTRIBUTING](.github/CONTRIBUTING.md) for details.
 
 ## Security Vulnerabilities
 
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
+For any security vulnarabilities please send an email to hey@nkoporec.com
 
 ## Credits
 
