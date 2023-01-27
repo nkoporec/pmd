@@ -1,9 +1,15 @@
 [package]
 name = "pmd"
-version = "0.1.0"
+version = "0.0.1"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+authors = ["nkoporec <me@nkoporec.com>"]
+description = "Poor's man debugger, the most easy way to debug"
+readme = "README.md"
+repository = "https://github.com/nkoporec/pmd/"
+license = "MIT"
+license-file = "LICENSE"
+keywords = ["debugger", "tui"]
+categories = ["command-line-utilities", "development-tools", "development-tools::debugging"]
 
 [dependencies]
 crossterm = { version = "0.25"}
