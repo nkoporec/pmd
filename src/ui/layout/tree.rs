@@ -26,7 +26,7 @@ pub fn render_tree(items: Vec<TreeItem>) -> Tree {
 pub fn build_tree_items(payload: String) -> Vec<TreeItem<'static>> {
     let mut items = vec![];
 
-    if payload == "" {
+    if payload == "" || payload == "No variables" {
         return items;
     }
 

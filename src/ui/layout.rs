@@ -97,7 +97,7 @@ impl BreakpointList {
 
     pub fn get_value(&mut self) -> String {
         if self.items.len() == 0 {
-            return "No variables".to_string();
+            return "".to_string();
         }
 
         let selected = self.state.selected().unwrap();
