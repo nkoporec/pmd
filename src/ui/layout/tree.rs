@@ -10,7 +10,7 @@ pub fn render_tree(items: Vec<TreeItem>) -> Tree {
         .block(
             Block::default()
                 .borders(Borders::ALL)
-                .title(format!("Inspection")),
+                .title("Inspection".to_string()),
         )
         .highlight_style(
             Style::default()
@@ -20,13 +20,13 @@ pub fn render_tree(items: Vec<TreeItem>) -> Tree {
         )
         .highlight_symbol(">> ");
 
-    return items;
+    items
 }
 
 pub fn build_tree_items(payload: String) -> Vec<TreeItem<'static>> {
     let mut items = vec![];
 
-    if payload == "" || payload == "No variables" {
+    if payload.is_empty() || payload == "No variables" {
         return items;
     }
 
@@ -54,7 +54,7 @@ pub fn build_tree_items(payload: String) -> Vec<TreeItem<'static>> {
         }
     }
 
-    return items;
+    items
 }
 
 // Recursive flatten an object, so we can extract only strings and numbers.
@@ -78,5 +78,5 @@ fn recursive_flatten<'a>(value: &Value, result: &mut TreeItem<'a>) -> TreeItem<'
         }
     }
 
-    return result.clone();
+    result.clone()
 }

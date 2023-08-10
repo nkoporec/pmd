@@ -40,17 +40,17 @@ impl BreakpointList {
     }
 
     pub fn get_selected_filepath(&mut self) -> String {
-        if self.items.len() == 0 {
+        if self.items.is_empty() {
             return "No data".to_string();
         }
 
         let selected = self.state.selected().unwrap();
         let data = &self.items[selected];
-        return data.filepath.clone();
+        data.filepath.clone()
     }
 
     pub fn next(&mut self) {
-        if self.items.len() == 0 {
+        if self.items.is_empty() {
             return;
         }
 
@@ -68,7 +68,7 @@ impl BreakpointList {
     }
 
     pub fn previous(&mut self) {
-        if self.items.len() == 0 {
+        if self.items.is_empty() {
             return;
         }
 
@@ -86,27 +86,27 @@ impl BreakpointList {
     }
 
     pub fn get_selected_breakpoint(&mut self) -> Option<&Breakpoint> {
-        if self.items.len() == 0 {
+        if self.items.is_empty() {
             return None;
         }
 
         let selected = self.state.selected().unwrap();
         let breakpoint = &self.items[selected];
-        return Some(breakpoint);
+        Some(breakpoint)
     }
 
     pub fn get_value(&mut self) -> String {
-        if self.items.len() == 0 {
+        if self.items.is_empty() {
             return "".to_string();
         }
 
         let selected = self.state.selected().unwrap();
         let data = &self.items[selected];
-        return data.payload.clone();
+        data.payload.clone()
     }
 
     pub fn get_callstack(&mut self) -> Vec<Callstack> {
-        if self.items.len() == 0 {
+        if self.items.is_empty() {
             return vec![];
         }
 
@@ -114,10 +114,10 @@ impl BreakpointList {
         match selected {
             Some(selected_i) => {
                 let data = &self.items[selected_i];
-                return data.callstack.to_owned();
+                data.callstack.to_owned()
             }
             None => {
-                return vec![];
+                vec![]
             }
         }
     }
@@ -136,17 +136,17 @@ impl CallstackList {
     }
 
     pub fn get_selected_callstack(&mut self) -> Option<&Callstack> {
-        if self.items.len() == 0 {
+        if self.items.is_empty() {
             return None;
         }
 
         let selected = self.state.selected().unwrap();
         let callstack = &self.items[selected];
-        return Some(callstack);
+        Some(callstack)
     }
 
     pub fn next(&mut self) {
-        if self.items.len() == 0 {
+        if self.items.is_empty() {
             return;
         }
 
@@ -164,7 +164,7 @@ impl CallstackList {
     }
 
     pub fn previous(&mut self) {
-        if self.items.len() == 0 {
+        if self.items.is_empty() {
             return;
         }
 
@@ -186,17 +186,17 @@ impl CallstackList {
     }
 
     pub fn get_selected_filepath(&mut self) -> String {
-        if self.items.len() == 0 {
+        if self.items.is_empty() {
             return "No data".to_string();
         }
 
         let selected = self.state.selected().unwrap();
         let data = &self.items[selected];
-        return data.filepath.clone();
+        data.filepath.clone()
     }
 
     pub fn select_first(&mut self) {
-        if self.items.len() == 0 {
+        if self.items.is_empty() {
             return;
         }
 
@@ -293,7 +293,7 @@ pub fn render_main(state: &mut UiState, f: &mut Frame<CrosstermBackend<Stdout>>)
     let items = tree::render_tree(state.tree_state.items.to_vec());
     f.render_stateful_widget(items, bottom_layout[0], &mut state.tree_state.state);
 
-    let status_bar = Paragraph::new(state.status_bar.get_status().clone())
+    let status_bar = Paragraph::new(state.status_bar.get_status())
         .block(Block::default().borders(Borders::NONE));
     f.render_widget(status_bar, status_layout[0]);
 

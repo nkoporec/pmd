@@ -2,7 +2,7 @@ use std::{io, sync::{Arc, Mutex}, time::{Duration, Instant}};
 
 use crossterm::{terminal::enable_raw_mode, event::poll};
 use tokio::sync::broadcast::Receiver;
-use tui::{backend::CrosstermBackend, Terminal, text::Spans};
+use tui::{backend::CrosstermBackend, Terminal};
 use tui_tree_widget::{TreeItem, TreeState};
 
 use crate::{server::Breakpoint, ui::{keymap::{InputMode, ListMode}, layout::{BreakpointList, CallstackList}}, config::Config};
@@ -54,7 +54,7 @@ impl Popup {
     }
 
     pub fn is_active(&self) -> bool {
-        return self.show;
+        self.show
     }
 
     pub fn show(&mut self) {
@@ -72,7 +72,7 @@ impl Popup {
     }
 
     pub fn get_text(&self) -> Vec<String> {
-        return self.text.clone();
+        self.text.clone()
     }
 }
 
@@ -93,7 +93,7 @@ impl StatusBar {
     }
 
     pub fn get_status(&mut self) -> String {
-        return self.text.clone();
+        self.text.clone()
     }
 }
 

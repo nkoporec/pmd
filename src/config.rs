@@ -71,7 +71,7 @@ pub fn parse(config: &mut Config) {
 
     // Check if we have the default config, otherwise create it.
     let config_file_path = get_config_path();
-    if config_file_path.exists() == false {
+    if !config_file_path.exists() {
         create_default_config_file(config_file_path.clone());
     }
 
@@ -101,7 +101,7 @@ fn parse_toml_config(config: &mut Config, path: PathBuf) {
         let server_config = toml_config.server.unwrap();
         if server_config.port.is_some() {
             let server_port_config = server_config.port.unwrap();
-            config.port = server_port_config.clone();
+            config.port = server_port_config;
         }
     }
 
@@ -110,7 +110,7 @@ fn parse_toml_config(config: &mut Config, path: PathBuf) {
         let keymap_config = toml_config.keymap.unwrap();
         if keymap_config.leader_key.is_some() {
             let leader_key_config = keymap_config.leader_key.unwrap();
-            config.keymap.leader_key = leader_key_config.clone();
+            config.keymap.leader_key = leader_key_config;
         }
     }
 }
@@ -118,13 +118,13 @@ fn parse_toml_config(config: &mut Config, path: PathBuf) {
 fn get_config_path() -> PathBuf {
     match std::env::consts::OS {
         "linux" => {
-            return home_dir().unwrap().join(".config/pmd/config.toml");
+            home_dir().unwrap().join(".config/pmd/config.toml")
         }
         "macos" => {
-            return home_dir().unwrap().join(".config/pmd/config.toml");
+            home_dir().unwrap().join(".config/pmd/config.toml")
         }
         "windows" => {
-            return home_dir().unwrap().join(".pmd/config.toml");
+            home_dir().unwrap().join(".pmd/config.toml")
         }
         _ => {
             panic!("Unsupported operating system")
@@ -133,7 +133,7 @@ fn get_config_path() -> PathBuf {
 }
 
 fn create_default_config_file(path: PathBuf) {
-    if path.exists() == false {
+    if !path.exists() {
         let default_config_embed = Stub::get("config.toml").unwrap();
         let default_config = std::str::from_utf8(default_config_embed.data.as_ref()).unwrap();
 

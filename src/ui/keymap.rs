@@ -27,13 +27,13 @@ impl InputMode {
     pub fn to_string(&self) -> String {
         match self {
             InputMode::Normal => {
-                return String::from("Normal");
+                String::from("Normal")
             }
             InputMode::Inspection => {
-                return String::from("Inspection");
+                String::from("Inspection")
             }
             InputMode::Visual => {
-                return String::from("Visual");
+                String::from("Visual")
             }
         }
     }
@@ -146,18 +146,18 @@ pub fn normal_keymap(
 
                     let mut popup_text = vec![];
 
-                    let breakpoint_file = String::from(format!("[FILE]: {}", breakpoint.filepath));
+                    let breakpoint_file = format!("[FILE]: {}", breakpoint.filepath);
                     popup_text.push(breakpoint_file);
 
-                    let breakpoint_line = String::from(format!("[LINE]: {}", breakpoint.line));
+                    let breakpoint_line = format!("[LINE]: {}", breakpoint.line);
                     popup_text.push(breakpoint_line);
 
                     let breakpoint_timestamp =
-                        String::from(format!("[TIME]: {}", breakpoint.timestamp));
+                        format!("[TIME]: {}", breakpoint.timestamp);
                     popup_text.push(breakpoint_timestamp);
 
                     let breakpoint_connector =
-                        String::from(format!("[CONNECTOR]: {}", breakpoint.connector_type));
+                        format!("[CONNECTOR]: {}", breakpoint.connector_type);
                     popup_text.push(breakpoint_connector);
 
                     state.popup.set_text(popup_text);
@@ -166,10 +166,10 @@ pub fn normal_keymap(
                     let mut popup_text = vec![];
                     let callstack = state.list_state.callstack.get_selected_callstack().unwrap();
 
-                    let callstack_file = String::from(format!("[FILE]: {}", callstack.filepath));
+                    let callstack_file = format!("[FILE]: {}", callstack.filepath);
                     popup_text.push(callstack_file);
 
-                    let callstack_line = String::from(format!("[LINE]: {}", callstack.line));
+                    let callstack_line = format!("[LINE]: {}", callstack.line);
                     popup_text.push(callstack_line);
 
                     state.popup.set_text(popup_text);
