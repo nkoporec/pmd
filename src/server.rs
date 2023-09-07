@@ -36,7 +36,7 @@ pub async fn run(tx: Sender<Breakpoint>, port: u16) {
         let app_state = Arc::new(AppState { data: Mutex::new(vec![]), tx });
         let app = Router::new().route("/dump", post(dump)).with_state(app_state);
 
-        let addr = SocketAddr::from(([127, 0, 0, 1], port));
+        let addr = SocketAddr::from(([0, 0, 0, 0], port));
         axum::Server::bind(&addr)
             .serve(app.into_make_service())
             .await
